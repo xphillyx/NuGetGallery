@@ -54,6 +54,8 @@ using Microsoft.Extensions.Http;
 using NuGetGallery.Infrastructure.Lucene;
 using System.Threading;
 using Role = NuGet.Services.Entities.Role;
+using System.ServiceModel.Configuration;
+using Microsoft.ApplicationInsights.Channel;
 
 namespace NuGetGallery
 {
@@ -869,6 +871,17 @@ namespace NuGetGallery
                     c.Resolve<IMessageService>(),
                     c.Resolve<IMessageServiceConfiguration>()))
                 .As<ISearchSideBySideService>()
+                .InstancePerLifetimeScope();
+
+            builder
+                .Register(c => new HijackSearchServiceFactory(
+                    c.Resolve<HttpContextBase>(),
+                    c.Resolve<IFeatureFlagService>(),
+                    c.Resolve<IContentObjectService>(),
+                    c.Resolve<ISearchService>(),
+                    c.ResolveKeyed<ISearchService>(BindingKeys.PreviewSearchClient),
+                    c.Resolve<ITelemetryService>()))
+                .As<IHijackSearchServiceFactory>()
                 .InstancePerLifetimeScope();
 
             builder

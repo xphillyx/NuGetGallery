@@ -86,6 +86,7 @@ namespace NuGetGallery
             public const string SearchSideBySide = "SearchSideBySide";
             public const string ABTestEnrollmentInitialized = "ABTestEnrollmentInitialized";
             public const string ABTestEvaluated = "ABTestEvaluated";
+            public const string HijackTestEvaluated = "HijackTestEvaluated";
         }
 
         private readonly IDiagnosticsSource _diagnosticsSource;
@@ -1034,6 +1035,18 @@ namespace NuGetGallery
                 properties.Add(TestName, name);
                 properties.Add(IsActive, isActive.ToString());
                 properties.Add(IsAuthenticated, isAuthenticated.ToString());
+                properties.Add(TestBucket, testBucket.ToString());
+                properties.Add(TestPercentage, testPercentage.ToString());
+            });
+        }
+
+        public void TrackHijackTestEvaluated(
+            bool isActive,
+            int testBucket,
+            int testPercentage)
+        {
+            TrackMetric(Events.HijackTestEvaluated, 1, properties => {
+                properties.Add(IsActive, isActive.ToString());
                 properties.Add(TestBucket, testBucket.ToString());
                 properties.Add(TestPercentage, testPercentage.ToString());
             });

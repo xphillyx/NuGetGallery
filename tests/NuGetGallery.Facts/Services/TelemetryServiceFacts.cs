@@ -321,6 +321,10 @@ namespace NuGetGallery
                     yield return new object[] { "ABTestEvaluated",
                         (TrackAction)(s => s.TrackABTestEvaluated("SearchPreview", true, true, 0, 20))
                     };
+
+                    yield return new object[] { "HijackTestEvaluated",
+                        (TrackAction)(s => s.TrackHijackTestEvaluated(true, 0, 20))
+                    };
                 }
             }
 

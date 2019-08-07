@@ -36,7 +36,9 @@ namespace NuGetGallery.Infrastructure.Search
 
         public bool ContainsAllVersions { get { return true; } }
 
-        public ExternalSearchService(IAppConfiguration config, IDiagnosticsService diagnostics, ISearchClient searchClient)
+        public ExternalSearchService(
+            IDiagnosticsService diagnostics,
+            ISearchClient searchClient)
         {
             _searchClient = searchClient ?? throw new ArgumentNullException(nameof(searchClient));
 

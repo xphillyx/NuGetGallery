@@ -380,5 +380,16 @@ namespace NuGetGallery
             bool isAuthenticated,
             int testBucket,
             int testPercentage);
+
+        /// <summary>
+        /// Track when the Azure Search hijack test is evaluated.
+        /// </summary>
+        /// <param name="isActive">Whether or not the test evaluated to active.</param>
+        /// <param name="testbucket">The bucket the user is in.</param>
+        /// <param name="testPercentage">The percentage of users in the test.</param>
+        void TrackHijackTestEvaluated(
+            bool isActive,
+            int testbucket,
+            int testPercentage);
     }
 }
