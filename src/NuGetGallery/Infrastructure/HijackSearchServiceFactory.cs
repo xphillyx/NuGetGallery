@@ -8,33 +8,26 @@ using System.Web;
 
 namespace NuGetGallery
 {
-    public class HijackSearchServiceFactory : IHijackSearchServiceFactory, IDisposable
+    public class HijackSearchServiceFactory : IHijackSearchServiceFactory
     {
         private readonly HttpContextBase _httpContext;
         private readonly IFeatureFlagService _featureFlags;
         private readonly IContentObjectService _contentObjectService;
         private readonly ISearchService _search;
         private readonly ISearchService _previewSearch;
-        private readonly ITelemetryService _telemetryService;
-
-        private readonly SHA256 _hasher;
 
         public HijackSearchServiceFactory(
             HttpContextBase httpContext,
             IFeatureFlagService featureFlags,
             IContentObjectService contentObjectService,
             ISearchService search,
-            ISearchService previewSearch,
-            ITelemetryService telemetryService)
+            ISearchService previewSearch)
         {
             _httpContext = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
             _featureFlags = featureFlags ?? throw new ArgumentNullException(nameof(featureFlags));
             _contentObjectService = contentObjectService ?? throw new ArgumentNullException(nameof(contentObjectService));
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _previewSearch = previewSearch ?? throw new ArgumentNullException(nameof(previewSearch));
-            _telemetryService = telemetryService ?? throw new ArgumentNullException(nameof(telemetryService));
-
-            _hasher = SHA256.Create();
         }
 
         public ISearchService GetService()
@@ -48,15 +41,8 @@ namespace NuGetGallery
             var testPercentage = _contentObjectService.ABTestConfiguration.PreviewHijackPercentage;
             var isActive = testBucket <= testPercentage;
 
-            _telemetryService.TrackHijackTestEvaluated(
-                isActive,
-                testBucket,
-                testPercentage);
-
             return isActive ? _previewSearch : _search;
         }
-
-        public void Dispose() => _hasher.Dispose();
 
         private int GetClientBucket()
         {
@@ -69,10 +55,13 @@ namespace NuGetGallery
                 clientData += "," + _httpContext.Request.UserAgent;
             }
 
-            var hashedBytes = _hasher.ComputeHash(Encoding.ASCII.GetBytes(clientData));
-            var value = BitConverter.ToUInt64(hashedBytes, startIndex: 0);
+            using (var hasher = SHA256.Create())
+            {
+                var hashedBytes = hasher.ComputeHash(Encoding.ASCII.GetBytes(clientData));
+                var value = BitConverter.ToUInt64(hashedBytes, startIndex: 0);
 
-            return (int)(value % 100) + 1;
+                return (int)(value % 100) + 1;
+            }
         }
 
         private string GetClientIpAddress()

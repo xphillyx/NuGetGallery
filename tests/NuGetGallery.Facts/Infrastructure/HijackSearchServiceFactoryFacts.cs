@@ -26,13 +26,6 @@ namespace NuGetGallery.Infrastructure
             // Assert
             Assert.Equal(_search.Object, result);
             Assert.NotEqual(_previewSearch.Object, result);
-
-            _telemetry.Verify(
-                t => t.TrackHijackTestEvaluated(
-                    /*isActive: */ It.IsAny<bool>(),
-                    /*testBucket: */ It.IsAny<int>(),
-                    /*testPercentage: */ It.IsAny<int>()),
-                Times.Never);
         }
 
         [Fact]
@@ -53,13 +46,6 @@ namespace NuGetGallery.Infrastructure
             // Assert
             Assert.Equal(_search.Object, result);
             Assert.NotEqual(_previewSearch.Object, result);
-
-            _telemetry.Verify(
-                t => t.TrackHijackTestEvaluated(
-                    /*isActive: */ false,
-                    /*testBucket: */ It.IsAny<int>(),
-                    /*testPercentage: */ 0),
-                Times.Once);
         }
 
         [Theory]
@@ -81,13 +67,6 @@ namespace NuGetGallery.Infrastructure
             // Assert
             Assert.Equal(_previewSearch.Object, result);
             Assert.NotEqual(_search.Object, result);
-
-            _telemetry.Verify(
-                t => t.TrackHijackTestEvaluated(
-                    /*isActive: */ true,
-                    /*testBucket: */ It.IsAny<int>(),
-                    /*testPercentage: */ 100),
-                Times.Once);
         }
 
         public static IEnumerable<object[]> ReturnsPreviewAt100PercentData()
@@ -135,25 +114,11 @@ namespace NuGetGallery.Infrastructure
             {
                 Assert.Equal(_previewSearch.Object, result);
                 Assert.NotEqual(_search.Object, result);
-
-                _telemetry.Verify(
-                    t => t.TrackHijackTestEvaluated(
-                        /*isActive: */ true,
-                        /*testBucket: */ It.IsAny<int>(),
-                        /*testPercentage: */ 50),
-                    Times.Once);
             }
             else
             {
                 Assert.Equal(_search.Object, result);
                 Assert.NotEqual(_previewSearch.Object, result);
-
-                _telemetry.Verify(
-                    t => t.TrackHijackTestEvaluated(
-                        /*isActive: */ false,
-                        /*testBucket: */ It.IsAny<int>(),
-                        /*testPercentage: */ 50),
-                    Times.Once);
             }
         }
 
@@ -219,7 +184,6 @@ namespace NuGetGallery.Infrastructure
         private readonly Mock<IABTestConfiguration> _config;
         private readonly Mock<ISearchService> _search;
         private readonly Mock<ISearchService> _previewSearch;
-        private readonly Mock<ITelemetryService> _telemetry;
 
         private readonly HijackSearchServiceFactory _target;
 
@@ -230,7 +194,6 @@ namespace NuGetGallery.Infrastructure
             _config = new Mock<IABTestConfiguration>();
             _search = new Mock<ISearchService>();
             _previewSearch = new Mock<ISearchService>();
-            _telemetry = new Mock<ITelemetryService>();
 
             var content = new Mock<IContentObjectService>();
             content
@@ -242,8 +205,7 @@ namespace NuGetGallery.Infrastructure
                 _featureFlags.Object,
                 content.Object,
                 _search.Object,
-                _previewSearch.Object,
-                _telemetry.Object);
+                _previewSearch.Object);
         }
     }
 }
