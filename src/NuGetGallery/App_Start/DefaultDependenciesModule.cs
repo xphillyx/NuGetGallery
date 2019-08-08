@@ -876,7 +876,8 @@ namespace NuGetGallery
                     c.Resolve<IFeatureFlagService>(),
                     c.Resolve<IContentObjectService>(),
                     c.Resolve<ISearchService>(),
-                    c.ResolveKeyed<ISearchService>(BindingKeys.PreviewSearchClient)))
+                    c.ResolveKeyed<ISearchService>(BindingKeys.PreviewSearchClient),
+                    c.Resolve<ILogger<HijackSearchServiceFactory>>()))
                 .As<IHijackSearchServiceFactory>()
                 .InstancePerLifetimeScope();
 

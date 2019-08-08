@@ -5,6 +5,8 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 
 namespace NuGetGallery
 {
@@ -22,19 +24,22 @@ namespace NuGetGallery
         private readonly IContentObjectService _contentObjectService;
         private readonly ISearchService _search;
         private readonly ISearchService _previewSearch;
+        private readonly ILogger<HijackSearchServiceFactory> _logger;
 
         public HijackSearchServiceFactory(
             HttpContextBase httpContext,
             IFeatureFlagService featureFlags,
             IContentObjectService contentObjectService,
             ISearchService search,
-            ISearchService previewSearch)
+            ISearchService previewSearch,
+            ILogger<HijackSearchServiceFactory> logger = null)
         {
             _httpContext = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
             _featureFlags = featureFlags ?? throw new ArgumentNullException(nameof(featureFlags));
             _contentObjectService = contentObjectService ?? throw new ArgumentNullException(nameof(contentObjectService));
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _previewSearch = previewSearch ?? throw new ArgumentNullException(nameof(previewSearch));
+            _logger = logger;
         }
 
         public ISearchService GetService()
@@ -47,6 +52,18 @@ namespace NuGetGallery
             var testBucket = GetClientBucket();
             var testPercentage = _contentObjectService.ABTestConfiguration.PreviewHijackPercentage;
             var isActive = testBucket <= testPercentage;
+
+            // THIS IS FOR TESTING ONLY, DO NOT MERGE THIS IN!
+            _logger?.LogInformation(
+                "Evaluated hijack search test, bucket:{TestBucket} test percentage:{TestPercentage}, " +
+                "active:{IsActive}, real ip:{RealIp} forwarded ip:{ForwardedIp} user ip:{UserIp} user agent:{UserAgent}",
+                testBucket,
+                testPercentage,
+                isActive,
+                GetClientIpAddress(),
+                _httpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"],
+                _httpContext.Request.UserHostAddress,
+                _httpContext.Request.UserAgent);
 
             return isActive ? _previewSearch : _search;
         }
