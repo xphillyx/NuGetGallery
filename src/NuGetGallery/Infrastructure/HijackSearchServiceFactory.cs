@@ -10,6 +10,13 @@ namespace NuGetGallery
 {
     public class HijackSearchServiceFactory : IHijackSearchServiceFactory
     {
+        /// <summary>
+        /// The hasher that maps clients to test buckets. There is a single hasher per thread
+        /// to avoid performance issues from creating <see cref="SHA256"/> objects.
+        /// </summary>
+        [ThreadStatic]
+        private static readonly SHA256 Hasher = SHA256.Create();
+
         private readonly HttpContextBase _httpContext;
         private readonly IFeatureFlagService _featureFlags;
         private readonly IContentObjectService _contentObjectService;
@@ -55,13 +62,10 @@ namespace NuGetGallery
                 clientData += "," + _httpContext.Request.UserAgent;
             }
 
-            using (var hasher = SHA256.Create())
-            {
-                var hashedBytes = hasher.ComputeHash(Encoding.ASCII.GetBytes(clientData));
-                var value = BitConverter.ToUInt64(hashedBytes, startIndex: 0);
+            var hashedBytes = Hasher.ComputeHash(Encoding.ASCII.GetBytes(clientData));
+            var value = BitConverter.ToUInt64(hashedBytes, startIndex: 0);
 
-                return (int)(value % 100) + 1;
-            }
+            return (int)(value % 100) + 1;
         }
 
         private string GetClientIpAddress()
