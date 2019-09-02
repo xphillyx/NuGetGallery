@@ -9,7 +9,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Moq;
 using Xunit;
 
-namespace NuGetGallery
+namespace NuGetGallery.Telemetry
 {
     public class DeploymentIdTelemetryEnricherFacts
     {
@@ -78,6 +78,8 @@ namespace NuGetGallery
 
         public class TestableTelemetry : ITelemetry, ISupportProperties
         {
+            private readonly IDictionary<string, string>  _properties = new Dictionary<string, string>();
+
             public DateTimeOffset Timestamp { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             public TelemetryContext Context => throw new NotImplementedException();
@@ -85,7 +87,7 @@ namespace NuGetGallery
             public IExtension Extension { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
             public string Sequence { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-            public IDictionary<string, string> Properties => new Dictionary<string, string>();
+            public IDictionary<string, string> Properties => _properties;
 
             public ITelemetry DeepClone()
             {
