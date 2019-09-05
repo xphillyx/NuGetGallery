@@ -1127,4 +1127,7 @@ The {1} Team</value>
   <data name="PackagesWithIdNotFound" xml:space="preserve">
     <value>There are no packages with ID '{0}'.</value>
   </data>
+  <data name="SiteAdminNotLoggedInWithRequiredTenant" xml:space="preserve">
+    <value>The site admins are required to sign in with the '{0}' tenant only.</value>
+  </data>
 </root>
