@@ -279,7 +279,7 @@ namespace NuGet.Services.Entities
         /// <summary>
         /// Gets and sets the list of vulnerabilites that this package has.
         /// </summary>
-        public virtual ICollection<PackageVulnerability> Vulnerabilities { get; set; }
+        public ICollection<PackageVulnerability> Vulnerabilities { get; set; }
 
         /// <summary>
         /// A flag that indicates that the package metadata had an embedded icon specified.

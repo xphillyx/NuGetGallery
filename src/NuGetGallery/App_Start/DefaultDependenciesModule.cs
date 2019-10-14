@@ -51,6 +51,7 @@ using NuGetGallery.Infrastructure.Mail;
 using NuGetGallery.Infrastructure.Search;
 using NuGetGallery.Infrastructure.Search.Correlation;
 using NuGetGallery.Security;
+using NuGetGallery.Services.PackageManagement;
 using Role = NuGet.Services.Entities.Role;
 using SecretReaderFactory = NuGetGallery.Configuration.SecretReader.SecretReaderFactory;
 
@@ -409,6 +410,10 @@ namespace NuGetGallery
 
             builder.RegisterType<IconUrlTemplateProcessor>()
                 .As<IIconUrlTemplateProcessor>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PackageVulnerabilityService>()
+                .As<IPackageVulnerabilityService>()
                 .InstancePerLifetimeScope();
 
             services.AddHttpClient();
