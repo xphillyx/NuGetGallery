@@ -67,6 +67,7 @@ namespace NuGetGallery
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<UserCertificate> UserCertificates { get; set; }
         public DbSet<SymbolPackage> SymbolPackages { get; set; }
+        public DbSet<PackageVulnerability> Vulnerabilities { get; set; }
 
         /// <summary>
         /// User or organization accounts.
@@ -449,6 +450,11 @@ namespace NuGetGallery
                 .WithMany()
                 .HasForeignKey(d => d.DeprecatedByUserKey)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PackageVulnerability>()
+                .HasKey(v => v.Key)
+                .HasMany(v => v.VulnerablePackages)
+                .WithMany(p => p.Vulnerabilities);
         }
 #pragma warning restore 618
     }
