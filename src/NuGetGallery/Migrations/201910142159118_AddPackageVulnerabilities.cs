@@ -12,10 +12,12 @@ namespace NuGetGallery.Migrations
                 c => new
                     {
                         Key = c.Int(nullable: false, identity: true),
-                        VulnerablePackageId = c.String(),
-                        VulnerablePackageVersionRange = c.String(),
+                        GitHubDatabaseKey = c.Int(nullable: false),
+                        PackageId = c.String(),
+                        PackageVersionRange = c.String(),
                     })
-                .PrimaryKey(t => t.Key);
+                .PrimaryKey(t => t.Key)
+                .Index(t => t.GitHubDatabaseKey, unique: true);
             
             CreateTable(
                 "dbo.PackageVulnerabilityPackages",
@@ -37,6 +39,7 @@ namespace NuGetGallery.Migrations
             DropForeignKey("dbo.PackageVulnerabilityPackages", "PackageVulnerability_Key", "dbo.PackageVulnerabilities");
             DropIndex("dbo.PackageVulnerabilityPackages", new[] { "Package_Key" });
             DropIndex("dbo.PackageVulnerabilityPackages", new[] { "PackageVulnerability_Key" });
+            DropIndex("dbo.PackageVulnerabilities", new[] { "GitHubDatabaseKey" });
             DropTable("dbo.PackageVulnerabilityPackages");
             DropTable("dbo.PackageVulnerabilities");
         }

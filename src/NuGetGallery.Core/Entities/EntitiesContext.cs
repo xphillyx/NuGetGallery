@@ -455,6 +455,10 @@ namespace NuGetGallery
                 .HasKey(v => v.Key)
                 .HasMany(v => v.VulnerablePackages)
                 .WithMany(p => p.Vulnerabilities);
+
+            modelBuilder.Entity<PackageVulnerability>()
+                .HasIndex(v => v.GitHubDatabaseKey)
+                .IsUnique();
         }
 #pragma warning restore 618
     }
