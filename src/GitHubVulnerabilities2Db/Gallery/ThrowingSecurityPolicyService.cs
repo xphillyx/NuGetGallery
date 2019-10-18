@@ -7,7 +7,7 @@ using System.Web;
 using NuGet.Services.Entities;
 using NuGetGallery.Security;
 
-namespace GitHubVulnerability2Db.Gallery
+namespace GitHubVulnerabilities2Db.Gallery
 {
     public class ThrowingSecurityPolicyService : ISecurityPolicyService
     {

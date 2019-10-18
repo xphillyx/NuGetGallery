@@ -42,7 +42,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountDeleter", "src\Accou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountDeleter.Facts", "tests\AccountDeleter.Facts\AccountDeleter.Facts.csproj", "{98765110-844D-41BE-8083-22E064136E05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubVulnerability2Db", "src\GitHubVulnerabilities2Db\GitHubVulnerability2Db.csproj", "{DDA65E01-704D-4144-B351-C15FA4FB9BD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubVulnerabilities2Db", "src\GitHubVulnerabilities2Db\GitHubVulnerabilities2Db.csproj", "{DDA65E01-704D-4144-B351-C15FA4FB9BD5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -6,15 +6,15 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GitHubVulnerability2Db.Configuration;
+using GitHubVulnerabilities2Db.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace GitHubVulnerability2Db.GraphQL
+namespace GitHubVulnerabilities2Db.GraphQL
 {
     public class QueryService : IQueryService
     {
-        public const string UserAgent = "NuGet.Jobs.GitHubVulnerability2Db";
+        public const string UserAgent = "NuGet.Jobs.GitHubVulnerabilities2Db";
 
         public QueryService(
             InitializationConfiguration initializationConfiguration,

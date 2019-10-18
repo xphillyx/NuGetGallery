@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace GitHubVulnerability2Db.GraphQL
+namespace GitHubVulnerabilities2Db.GraphQL
 {
     /// <summary>
     /// A GraphQL response object.

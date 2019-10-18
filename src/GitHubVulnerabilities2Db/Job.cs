@@ -6,11 +6,11 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using GitHubVulnerability2Db.Collector;
-using GitHubVulnerability2Db.Configuration;
-using GitHubVulnerability2Db.Gallery;
-using GitHubVulnerability2Db.GraphQL;
-using GitHubVulnerability2Db.Ingest;
+using GitHubVulnerabilities2Db.Collector;
+using GitHubVulnerabilities2Db.Configuration;
+using GitHubVulnerabilities2Db.Gallery;
+using GitHubVulnerabilities2Db.GraphQL;
+using GitHubVulnerabilities2Db.Ingest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,7 +22,7 @@ using NuGetGallery;
 using NuGetGallery.Auditing;
 using NuGetGallery.Security;
 
-namespace GitHubVulnerability2Db
+namespace GitHubVulnerabilities2Db
 {
     public class Job : JsonConfigurationJob, IDisposable
     {

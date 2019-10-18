@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NuGet.Services.Entities;
 using NuGetGallery;
 
-namespace GitHubVulnerability2Db.Gallery
+namespace GitHubVulnerabilities2Db.Gallery
 {
     public class ThrowingIndexingService : IIndexingService
     {

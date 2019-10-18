@@ -9,7 +9,7 @@ using NuGet.Services.Entities;
 using NuGet.Versioning;
 using NuGetGallery;
 
-namespace GitHubVulnerability2Db.Gallery
+namespace GitHubVulnerabilities2Db.Gallery
 {
     public class ThrowingTelemetryService : ITelemetryService
     {

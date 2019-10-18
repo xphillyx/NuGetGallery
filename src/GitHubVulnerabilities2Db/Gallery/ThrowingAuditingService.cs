@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using NuGetGallery.Auditing;
 
-namespace GitHubVulnerability2Db.Gallery
+namespace GitHubVulnerabilities2Db.Gallery
 {
     public class ThrowingAuditingService : IAuditingService
     {

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace GitHubVulnerability2Db.Configuration
+namespace GitHubVulnerabilities2Db.Configuration
 {
     public class InitializationConfiguration
     {

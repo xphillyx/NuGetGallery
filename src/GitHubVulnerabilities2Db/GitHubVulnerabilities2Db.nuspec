@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>GitHubVulnerability2Db</id>
+    <id>GitHubVulnerabilities2Db</id>
     <version>$version$</version>
-    <title>GitHubVulnerability2Db</title>
+    <title>GitHubVulnerabilities2Db</title>
     <authors>.NET Foundation</authors>
     <owners>.NET Foundation</owners>
-    <description>GitHubVulnerability2Db</description>
+    <description>GitHubVulnerabilities2Db</description>
     <copyright>Copyright .NET Foundation</copyright>
   </metadata>
   <files>

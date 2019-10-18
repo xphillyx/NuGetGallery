@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GitHubVulnerability2Db.GraphQL
+namespace GitHubVulnerabilities2Db.GraphQL
 {
     public interface IQueryService
     {
