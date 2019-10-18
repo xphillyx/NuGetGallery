@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountDeleter", "src\Accou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountDeleter.Facts", "tests\AccountDeleter.Facts\AccountDeleter.Facts.csproj", "{98765110-844D-41BE-8083-22E064136E05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubVulnerability2Db", "src\GitHubVulnerabilities2Db\GitHubVulnerability2Db.csproj", "{DDA65E01-704D-4144-B351-C15FA4FB9BD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{98765110-844D-41BE-8083-22E064136E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98765110-844D-41BE-8083-22E064136E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98765110-844D-41BE-8083-22E064136E05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDA65E01-704D-4144-B351-C15FA4FB9BD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDA65E01-704D-4144-B351-C15FA4FB9BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDA65E01-704D-4144-B351-C15FA4FB9BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDA65E01-704D-4144-B351-C15FA4FB9BD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +124,7 @@ Global
 		{C7D5E850-33FA-4EC5-8D7F-B1C8DD5D48F9} = {155100FF-524B-4CAF-93C6-A57478B3DBAD}
 		{8EE102B9-DA4E-4FDF-B6FD-FB12E6584DD7} = {2204C510-A559-4ED7-9590-FDC09093575B}
 		{98765110-844D-41BE-8083-22E064136E05} = {39E54EC3-CBAA-453A-BE64-748FE1559A58}
+		{DDA65E01-704D-4144-B351-C15FA4FB9BD5} = {2204C510-A559-4ED7-9590-FDC09093575B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {064A3BDE-5203-4AD6-A6C9-5CF08301EC8F}
