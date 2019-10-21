@@ -58,6 +58,8 @@
     <Compile Include="Collector\NodeCollectorQueryService.cs" />
     <Compile Include="GraphQL\IQueryService.cs" />
     <Compile Include="Collector\INodeCollectorQueryService.cs" />
+    <Compile Include="Ingest\GitHubVersionRangeParser.cs" />
+    <Compile Include="Ingest\IGitHubVersionRangeParser.cs" />
     <Compile Include="Ingest\INodeIngestor.cs" />
     <Compile Include="Ingest\VulnerabilityIngestor.cs" />
     <Compile Include="Job.cs" />

@@ -70,6 +70,10 @@ namespace GitHubVulnerabilities2Db
                 .As<IPackageVulnerabilityService>();
 
             containerBuilder
+                .RegisterType<GitHubVersionRangeParser>()
+                .As<IGitHubVersionRangeParser>();
+
+            containerBuilder
                 .RegisterType<VulnerabilityIngestor>()
                 .As<INodeIngestor<SecurityAdvisory>>()
                 .As<INodeIngestor<SecurityVulnerability>>();
