@@ -6,7 +6,7 @@ using System;
 namespace GitHubVulnerabilities2Db.GraphQL
 {
     /// <summary>
-    /// Interface for types returned by the GraphQL API.
+    /// Interface for queryable types returned by the GraphQL API.
     /// </summary>
     public interface INode
     {

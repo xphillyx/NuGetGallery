@@ -14,6 +14,9 @@ namespace GitHubVulnerabilities2Db.GraphQL
 {
     public class QueryService : IQueryService
     {
+        /// <remarks>
+        /// GitHub requires that every request includes a UserAgent.
+        /// </remarks>
         public const string UserAgent = "NuGet.Jobs.GitHubVulnerabilities2Db";
 
         public QueryService(

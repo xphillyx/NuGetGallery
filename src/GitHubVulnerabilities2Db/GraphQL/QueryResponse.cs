@@ -6,15 +6,16 @@ using System.Collections.Generic;
 namespace GitHubVulnerabilities2Db.GraphQL
 {
     /// <summary>
-    /// A GraphQL response object.
+    /// A GraphQL query response object.
     /// </summary>
-    /// <typeparam name="TResponse">The type of response data being retrieved.</typeparam>
-    /// <typeparam name="TNode">The type of node in the response data.</typeparam>
     public class QueryResponse
     {
         public QueryResponseData Data { get; set; }
     }
 
+    /// <summary>
+    /// The nested data inside a <see cref="QueryResponse"/>.
+    /// </summary>
     public class QueryResponseData
     {
         /// <summary>
