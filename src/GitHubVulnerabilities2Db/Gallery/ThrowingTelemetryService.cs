@@ -11,6 +11,9 @@ using NuGetGallery;
 
 namespace GitHubVulnerabilities2Db.Gallery
 {
+    /// <remarks>
+    /// This job should not attempt to emit any telemetry.
+    /// </remarks>
     public class ThrowingTelemetryService : ITelemetryService
     {
         public void TraceException(Exception exception)

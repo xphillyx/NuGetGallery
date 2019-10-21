@@ -9,6 +9,9 @@ using NuGetGallery.Security;
 
 namespace GitHubVulnerabilities2Db.Gallery
 {
+    /// <remarks>
+    /// This job should not need to access any security policies.
+    /// </remarks>
     public class ThrowingSecurityPolicyService : ISecurityPolicyService
     {
         public IEnumerable<IUserSecurityPolicySubscription> Subscriptions => throw new System.NotImplementedException();

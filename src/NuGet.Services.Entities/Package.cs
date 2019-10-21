@@ -176,7 +176,7 @@ namespace NuGet.Services.Entities
         /// <summary>
         /// Gets or sets the version listed in the manifest for this package, which MAY NOT conform to NuGet's use of SemVer
         /// </summary>
-        [StringLength(64)]
+        [StringLength(Constants.MaxPackageVersionLength)]
         [Required]
         public string Version { get; set; }
 

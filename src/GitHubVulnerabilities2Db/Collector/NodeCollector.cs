@@ -4,17 +4,18 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GitHubVulnerabilities2Db.GraphQL;
 using GitHubVulnerabilities2Db.Ingest;
 using NuGet.Services.Cursor;
 
 namespace GitHubVulnerabilities2Db.Collector
 {
-    public class VulnerabilityCollector : IVulnerabilityCollector
+    public class NodeCollector<TNode> : INodeCollector where TNode : INode
     {
-        public VulnerabilityCollector(
+        public NodeCollector(
             ReadWriteCursor<string> cursor,
-            IVulnerabilityQueryService queryService,
-            IVulnerabilityIngestor ingestor)
+            INodeCollectorQueryService<TNode> queryService,
+            INodeIngestor<TNode> ingestor)
         {
             _cursor = cursor;
             _queryService = queryService;
@@ -22,16 +23,19 @@ namespace GitHubVulnerabilities2Db.Collector
         }
 
         private readonly ReadWriteCursor<string> _cursor;
-        private readonly IVulnerabilityQueryService _queryService;
-        private readonly IVulnerabilityIngestor _ingestor;
+        private readonly INodeCollectorQueryService<TNode> _queryService;
+        private readonly INodeIngestor<TNode> _ingestor;
 
-        public async Task ProcessNewVulnerabilities(CancellationToken token)
+        public async Task Process(CancellationToken token)
         {
-            var vulnerabilities = await _queryService.GetVulnerabilitiesSince(_cursor, token);
-            if (vulnerabilities != null && vulnerabilities.Any())
+            var items = await _queryService.GetSince(_cursor, token);
+            if (items != null && items.Any())
             {
-                var latestCursor = vulnerabilities.Last().Cursor;
-                await _ingestor.Ingest(vulnerabilities.Select(v => v.Node).ToList(), token);
+                var latestCursor = items.Last().Cursor;
+                await _ingestor.Ingest(
+                    items.Select(v => v.Node).ToList(),
+                    token);
+
                 _cursor.Value = latestCursor;
                 await _cursor.Save(token);
             }

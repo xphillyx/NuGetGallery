@@ -52,7 +52,7 @@ namespace GitHubVulnerabilities2Db.GraphQL
             var message = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = InitializationConfiguration.GitHubGraphQlQueryEndpoint,
+                RequestUri = InitializationConfiguration.GitHubGraphQLQueryEndpoint,
                 Content = new StringContent(query, Encoding.UTF8, "application/json")
             };
 

@@ -9,10 +9,10 @@ using GitHubVulnerabilities2Db.GraphQL;
 namespace GitHubVulnerabilities2Db.Ingest
 {
     /// <summary>
-    /// Processes new or updated <see cref="SecurityVulnerability"/>s.
+    /// Processes new or updated nodes.
     /// </summary>
-    public interface IVulnerabilityIngestor
+    public interface INodeIngestor<TNode> where TNode : INode
     {
-        Task Ingest(IReadOnlyList<SecurityVulnerability> vulnerabilities, CancellationToken token);
+        Task Ingest(IReadOnlyList<TNode> items, CancellationToken token);
     }
 }

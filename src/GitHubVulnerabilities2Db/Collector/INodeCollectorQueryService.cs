@@ -10,10 +10,10 @@ using NuGet.Services.Cursor;
 namespace GitHubVulnerabilities2Db.Collector
 {
     /// <summary>
-    /// Wrapper around <see cref="IQueryService"/> to make it easier to query for vulnerabilities using a cursor.
+    /// Wrapper around <see cref="IQueryService"/> to make it easier to query for nodes using a cursor.
     /// </summary>
-    public interface IVulnerabilityQueryService
+    public interface INodeCollectorQueryService<TNode> where TNode : INode
     {
-        Task<IReadOnlyList<Edge<SecurityVulnerability>>> GetVulnerabilitiesSince(ReadCursor<string> cursor, CancellationToken token);
+        Task<IReadOnlyList<Edge<TNode>>> GetSince(ReadCursor<string> cursor, CancellationToken token);
     }
 }

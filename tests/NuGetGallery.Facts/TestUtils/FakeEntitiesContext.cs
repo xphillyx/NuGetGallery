@@ -162,7 +162,19 @@ namespace NuGetGallery
             }
         }
 
-        public DbSet<PackageVulnerability> Vulnerabilities
+        public DbSet<Vulnerability> Vulnerabilities
+        {
+            get
+            {
+                return Set<Vulnerability>();
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public DbSet<PackageVulnerability> PackageVulnerabilities
         {
             get
             {

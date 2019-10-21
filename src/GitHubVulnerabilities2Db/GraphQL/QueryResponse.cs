@@ -17,13 +17,21 @@ namespace GitHubVulnerabilities2Db.GraphQL
 
     public class QueryResponseData
     {
-        public QueryResponseData<SecurityVulnerability> SecurityVulnerabilities { get; set; }
+        /// <summary>
+        /// https://developer.github.com/v4/object/securityvulnerabilityconnection/
+        /// </summary>
+        public ConnectionResponseData<SecurityVulnerability> SecurityVulnerabilities { get; set; }
+
+        /// <summary>
+        /// https://developer.github.com/v4/object/securityadvisoryconnection/
+        /// </summary>
+        public ConnectionResponseData<SecurityAdvisory> SecurityAdvisories { get; set; }
     }
 
     /// <summary>
     /// Allows accessing <typeparamref name="TNode"/>s returned by GraphQL query.
     /// </summary>
-    public class QueryResponseData<TNode> where TNode : INode
+    public class ConnectionResponseData<TNode> where TNode : INode
     {
         public IEnumerable<Edge<TNode>> Edges { get; set; }
         public IEnumerable<TNode> Nodes { get; set; }
@@ -36,12 +44,5 @@ namespace GitHubVulnerabilities2Db.GraphQL
     {
         public string Cursor { get; set; }
         public TNode Node { get; set; }
-    }
-
-    /// <summary>
-    /// Interface for types returned by the GraphQL API.
-    /// </summary>
-    public interface INode
-    {
     }
 }

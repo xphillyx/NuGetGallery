@@ -6,6 +6,9 @@ using NuGetGallery.Auditing;
 
 namespace GitHubVulnerabilities2Db.Gallery
 {
+    /// <remarks>
+    /// This job should not attempt to audit.
+    /// </remarks>
     public class ThrowingAuditingService : IAuditingService
     {
         public Task SaveAuditRecordAsync(AuditRecord record)

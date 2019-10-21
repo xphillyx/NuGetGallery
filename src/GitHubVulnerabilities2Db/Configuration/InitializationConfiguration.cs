@@ -10,7 +10,7 @@ namespace GitHubVulnerabilities2Db.Configuration
         /// <summary>
         /// GitHub's v4 GraphQL API endpoint.
         /// </summary>
-        public Uri GitHubGraphQlQueryEndpoint { get; set; } = new Uri("https://api.github.com/graphql");
+        public Uri GitHubGraphQLQueryEndpoint { get; set; } = new Uri("https://api.github.com/graphql");
 
         /// <summary>
         /// The personal access token to use to authenticate with GitHub.
@@ -28,8 +28,13 @@ namespace GitHubVulnerabilities2Db.Configuration
         public string CursorContainerName { get; set; } = "vulnerability";
 
         /// <summary>
-        /// The name of the blob to save the job's cursor in.
+        /// The name of the blob to save the job's advisories cursor in.
         /// </summary>
-        public string CursorBlobName { get; set; } = "cursor.json";
+        public string AdvisoryCursorBlobName { get; set; } = "advisoriesCursor.json";
+
+        /// <summary>
+        /// The name of the blob to save the job's vulnerabilities cursor in.
+        /// </summary>
+        public string VulnerabilitiesCursorBlobName { get; set; } = "vulnerabilitiesCursor.json";
     }
 }

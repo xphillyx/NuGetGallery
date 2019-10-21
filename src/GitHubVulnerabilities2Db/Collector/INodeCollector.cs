@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace GitHubVulnerabilities2Db.Collector
 {
-    public interface IVulnerabilityCollector
+    public interface INodeCollector
     {
         /// <summary>
-        /// Queries for any new vulnerabilities using a cursor, processes them, and then updates the cursor.
+        /// Queries for any new or updated nodes using a cursor, processes them, and then updates the cursor.
         /// </summary>
-        Task ProcessNewVulnerabilities(CancellationToken token);
+        Task Process(CancellationToken token);
     }
 }

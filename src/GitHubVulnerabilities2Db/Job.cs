@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,13 +29,26 @@ namespace GitHubVulnerabilities2Db
     {
         private readonly HttpClient _client = new HttpClient();
 
-        public override Task Run()
+        public override async Task Run()
         {
-            var collector = _serviceProvider.GetRequiredService<IVulnerabilityCollector>();
+            var collectors = _serviceProvider.GetRequiredService<IEnumerable<INodeCollector>>();
             using (var tokenSource = new CancellationTokenSource())
             {
-                return collector.ProcessNewVulnerabilities(tokenSource.Token);
+                foreach (var collector in collectors)
+                {
+                    await collector.Process(tokenSource.Token);
+                }
             }
+        }
+
+        protected override void ConfigureJobServices(IServiceCollection services, IConfigurationRoot configurationRoot)
+        {
+            ConfigureInitializationSection<InitializationConfiguration>(services, configurationRoot);
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
 
         protected override void ConfigureAutofacServices(ContainerBuilder containerBuilder)
@@ -57,7 +71,8 @@ namespace GitHubVulnerabilities2Db
 
             containerBuilder
                 .RegisterType<VulnerabilityIngestor>()
-                .As<IVulnerabilityIngestor>();
+                .As<INodeIngestor<SecurityAdvisory>>()
+                .As<INodeIngestor<SecurityVulnerability>>();
         }
 
         protected void ConfigureGalleryServices(ContainerBuilder containerBuilder)
@@ -110,10 +125,16 @@ namespace GitHubVulnerabilities2Db
                 .As<IQueryService>();
 
             containerBuilder
-                .RegisterType<VulnerabilityQueryService>()
-                .As<IVulnerabilityQueryService>();
+                .RegisterType<AdvisoryCollectorQueryService>()
+                .As<INodeCollectorQueryService<SecurityAdvisory>>();
+
+            containerBuilder
+                .RegisterType<VulnerabilityCollectorQueryService>()
+                .As<INodeCollectorQueryService<SecurityVulnerability>>();
         }
 
+        private const string AdvisoryCursorKey = "AdvisoryCursorKey";
+        private const string VulnerabilityCursorKey = "VulnerabilityCursorKey";
         protected void ConfigureCollectorServices(ContainerBuilder containerBuilder)
         {
             containerBuilder
@@ -124,33 +145,44 @@ namespace GitHubVulnerabilities2Db
                 })
                 .As<CloudStorageAccount>();
 
-            containerBuilder
-                .Register(ctx =>
-                {
-                    var config = ctx.Resolve<IOptionsSnapshot<InitializationConfiguration>>().Value;
-                    var storageAccount = ctx.Resolve<CloudStorageAccount>();
-                    var blob = storageAccount
-                        .CreateCloudBlobClient()
-                        .GetContainerReference(config.CursorContainerName)
-                        .GetBlockBlobReference(config.CursorBlobName);
+            RegisterCollector<SecurityAdvisory>(
+                containerBuilder,
+                config => config.AdvisoryCursorBlobName,
+                AdvisoryCursorKey);
 
-                    return new DurableStringCursor(blob);
-                })
-                .As<ReadWriteCursor<string>>();
-
-            containerBuilder
-                .RegisterType<VulnerabilityCollector>()
-                .As<IVulnerabilityCollector>();
+            RegisterCollector<SecurityVulnerability>(
+                containerBuilder,
+                config => config.VulnerabilitiesCursorBlobName,
+                VulnerabilityCursorKey);
         }
 
-        protected override void ConfigureJobServices(IServiceCollection services, IConfigurationRoot configurationRoot)
+        private void RegisterCollector<TNode>(
+            ContainerBuilder containerBuilder,
+            Func<InitializationConfiguration, string> getBlobName,
+            string key) where TNode : INode
         {
-            ConfigureInitializationSection<InitializationConfiguration>(services, configurationRoot);
+            containerBuilder
+                .Register(ctx => CreateCursor(ctx, getBlobName))
+                .Keyed<ReadWriteCursor<string>>(key);
+
+            containerBuilder
+                .RegisterType<NodeCollector<TNode>>()
+                .WithParameter(
+                    (parameter, ctx) => parameter.ParameterType == typeof(ReadWriteCursor<string>),
+                    (parameter, ctx) => ctx.ResolveKeyed<ReadWriteCursor<string>>(key))
+                .As<INodeCollector>();
         }
 
-        public void Dispose()
+        private DurableStringCursor CreateCursor(IComponentContext ctx, Func<InitializationConfiguration, string> getBlobName)
         {
-            _client.Dispose();
+            var config = ctx.Resolve<IOptionsSnapshot<InitializationConfiguration>>().Value;
+            var storageAccount = ctx.Resolve<CloudStorageAccount>();
+            var blob = storageAccount
+                .CreateCloudBlobClient()
+                .GetContainerReference(config.CursorContainerName)
+                .GetBlockBlobReference(getBlobName(config));
+
+            return new DurableStringCursor(blob);
         }
     }
 }

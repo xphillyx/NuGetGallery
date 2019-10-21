@@ -92,6 +92,7 @@
     <Compile Include="User.cs" />
     <Compile Include="UserCertificate.cs" />
     <Compile Include="UserSecurityPolicy.cs" />
+    <Compile Include="Vulnerability.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EntityFramework">

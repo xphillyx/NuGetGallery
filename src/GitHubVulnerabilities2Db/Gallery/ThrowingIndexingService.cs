@@ -8,6 +8,9 @@ using NuGetGallery;
 
 namespace GitHubVulnerabilities2Db.Gallery
 {
+    /// <remarks>
+    /// The changes to the database that need indexing will be handled by our V3 pipeline.
+    /// </remarks>
     public class ThrowingIndexingService : IIndexingService
     {
         public string IndexPath => throw new NotImplementedException();
