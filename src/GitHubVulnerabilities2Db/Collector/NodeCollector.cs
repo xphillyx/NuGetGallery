@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace GitHubVulnerabilities2Db.Collector
             INodeCollectorQueryService<TNode> queryService,
             INodeIngestor<TNode> ingestor)
         {
-            _cursor = cursor;
-            _queryService = queryService;
-            _ingestor = ingestor;
+            _cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
+            _queryService = queryService ?? throw new ArgumentNullException(nameof(queryService));
+            _ingestor = ingestor ?? throw new ArgumentNullException(nameof(ingestor));
         }
 
         private readonly ReadWriteCursor<string> _cursor;

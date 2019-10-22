@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -23,8 +24,8 @@ namespace GitHubVulnerabilities2Db.GraphQL
             InitializationConfiguration initializationConfiguration,
             HttpClient client)
         {
-            InitializationConfiguration = initializationConfiguration;
-            Client = client;
+            InitializationConfiguration = initializationConfiguration ?? throw new ArgumentNullException(nameof(initializationConfiguration));
+            Client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public InitializationConfiguration InitializationConfiguration { get; set; }
