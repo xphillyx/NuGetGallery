@@ -32,10 +32,7 @@ namespace GitHubVulnerabilities2Db.Collector
             if (items != null && items.Any())
             {
                 var latestCursor = items.Last().Cursor;
-                await _ingestor.Ingest(
-                    items.Select(v => v.Node).ToList(),
-                    token);
-
+                await _ingestor.Ingest(items.Select(v => v.Node).ToList());
                 _cursor.Value = latestCursor;
                 await _cursor.Save(token);
             }

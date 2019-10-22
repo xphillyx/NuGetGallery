@@ -13,6 +13,6 @@ namespace GitHubVulnerabilities2Db.Ingest
     /// </summary>
     public interface INodeIngestor<TNode> where TNode : INode
     {
-        Task Ingest(IReadOnlyList<TNode> items, CancellationToken token);
+        Task Ingest(IReadOnlyList<TNode> items);
     }
 }

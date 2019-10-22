@@ -10,6 +10,11 @@ namespace GitHubVulnerabilities2Db.Ingest
     {
         public VersionRange ToNuGetVersionRange(string gitHubVersionRange)
         {
+            if (string.IsNullOrWhiteSpace(gitHubVersionRange))
+            {
+                throw new ArgumentException("A version range cannot be null or whitespace!");
+            }
+
             // Remove commas in version range. They exist solely for readability.
             gitHubVersionRange = gitHubVersionRange.Replace(",", string.Empty);
 
@@ -36,10 +41,6 @@ namespace GitHubVulnerabilities2Db.Ingest
 
                 // The symbol is the first part of the version range pair.
                 var symbol = versionRangeParts[i];
-                if (symbol.Length < 1 || symbol.Length > 2)
-                {
-                    throw new ArgumentException("Length of version range symbol must be 1 or 2.");
-                }
 
                 // The version is the second part of the version range pair.
                 var version = NuGetVersion.Parse(versionRangeParts[i + 1]);
