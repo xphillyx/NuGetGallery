@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collector\AdvisoryCollectorQueryBuilder.cs" />
     <Compile Include="Collector\IAdvisoryCollector.cs" />
     <Compile Include="Collector\AdvisoryCollector.cs" />
+    <Compile Include="Collector\IAdvisoryCollectorQueryBuilder.cs" />
     <Compile Include="Configuration\InitializationConfiguration.cs" />
     <Compile Include="Gallery\ThrowingIndexingService.cs" />
     <Compile Include="Gallery\ThrowingAuditingService.cs" />

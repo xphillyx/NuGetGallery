@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,25 +13,29 @@ namespace GitHubVulnerabilities2Db.Collector
 {
     public class AdvisoryCollectorQueryService : IAdvisoryCollectorQueryService
     {
-        private const int First = 100;
-
-        public AdvisoryCollectorQueryService(IQueryService queryService)
+        public AdvisoryCollectorQueryService(
+            IQueryService queryService,
+            IAdvisoryCollectorQueryBuilder queryBuilder)
         {
             _queryService = queryService ?? throw new ArgumentNullException(nameof(queryService));
+            _queryBuilder = queryBuilder ?? throw new ArgumentNullException(nameof(queryBuilder));
         }
 
         private readonly IQueryService _queryService;
+        private readonly IAdvisoryCollectorQueryBuilder _queryBuilder;
 
         public async Task<IReadOnlyList<SecurityAdvisory>> GetAdvisoriesSinceAsync(ReadCursor<DateTimeOffset> cursor, CancellationToken token)
         {
             await cursor.Load(token);
-            var firstResponse = await _queryService.QueryAsync(CreateQuery(updatedSince: cursor.Value), token);
-            var lastAdvisoryEdges = firstResponse?.Data?.SecurityAdvisories?.Edges?.ToList();
+            var firstQuery = _queryBuilder.CreateSecurityAdvisoriesQuery(updatedSince: cursor.Value);
+            var firstResponse = await _queryService.QueryAsync(firstQuery, token);
+            var lastAdvisoryEdges = firstResponse?.Data?.SecurityAdvisories?.Edges?.ToList() ?? Enumerable.Empty<Edge<SecurityAdvisory>>();
             var advisories = lastAdvisoryEdges.Select(e => e.Node).ToList();
             while (lastAdvisoryEdges.Any())
             {
-                var response = await _queryService.QueryAsync(CreateQuery(cursor: lastAdvisoryEdges.Last().Cursor), token);
-                lastAdvisoryEdges = response?.Data?.SecurityAdvisories?.Edges?.ToList();
+                var nextQuery = _queryBuilder.CreateSecurityAdvisoriesQuery(afterCursor: lastAdvisoryEdges.Last().Cursor);
+                var nextResponse = await _queryService.QueryAsync(nextQuery, token);
+                lastAdvisoryEdges = nextResponse?.Data?.SecurityAdvisories?.Edges?.ToList() ?? Enumerable.Empty<Edge<SecurityAdvisory>>();
                 advisories.AddRange(lastAdvisoryEdges.Select(e => e.Node));
             }
 
@@ -42,13 +45,14 @@ namespace GitHubVulnerabilities2Db.Collector
         private async Task<SecurityAdvisory> FetchAllVulnerabilities(SecurityAdvisory advisory, CancellationToken token)
         {
             // If the last time we fetched this advisory, it returned the maximum amount of vulnerabilities, query again to fetch the next batch.
-            var lastAdvisory = advisory;
-            while (lastAdvisory.Vulnerabilities.Edges.Count() == First)
+            var lastVulnerabilitiesFetchedCount = advisory.Vulnerabilities?.Edges?.Count() ?? 0;
+            while (lastVulnerabilitiesFetchedCount == _queryBuilder.GetMaximumResultsPerRequest())
             {
-                var additional = await _queryService.QueryAsync(CreateAdditionalQuery(advisory), token);
-                var nextAdvisory = additional.Data.SecurityAdvisory;
-                lastAdvisory = nextAdvisory;
-                advisory = MergeAdvisories(advisory, nextAdvisory);
+                var queryForAdditionalVulnerabilities = _queryBuilder.CreateSecurityAdvisoryQuery(advisory);
+                var responseForAdditionalVulnerabilities = await _queryService.QueryAsync(queryForAdditionalVulnerabilities, token);
+                var advisoryWithAdditionalVulnerabilities = responseForAdditionalVulnerabilities.Data.SecurityAdvisory;
+                lastVulnerabilitiesFetchedCount = advisoryWithAdditionalVulnerabilities.Vulnerabilities?.Edges?.Count() ?? 0;
+                advisory = MergeAdvisories(advisory, advisoryWithAdditionalVulnerabilities);
             }
 
             // We have seen some duplicate ranges (same ID and version range) returned by the API before, so make sure to dedupe the ranges.
@@ -58,79 +62,15 @@ namespace GitHubVulnerabilities2Db.Collector
                 advisory.Vulnerabilities.Edges = advisory.Vulnerabilities.Edges.Distinct(comparer);
             }
 
-            if (advisory.Vulnerabilities?.Nodes != null)
-            {
-                advisory.Vulnerabilities.Nodes = advisory.Vulnerabilities.Nodes.Distinct(comparer);
-            }
-
             return advisory;
-        }
-
-        private string CreateQuery(DateTimeOffset? updatedSince = null, string cursor = null)
-        {
-            return @"
-{
-  securityAdvisories(first: " + First + ", orderBy: {field: UPDATED_AT, direction: ASC}" + 
-            (!updatedSince.HasValue || updatedSince == DateTimeOffset.MinValue ? "" : $", updatedSince: \"{updatedSince.Value.ToString("O")}\"") + 
-            (string.IsNullOrWhiteSpace(cursor) ? "" : $", after: \"{cursor}\"") + @") {
-    edges {
-      cursor
-      node {
-        databaseId
-        ghsaId
-        severity
-        updatedAt
-        references {
-          url
-        }
-        " + CreateVulnerabilitiesConnectionQuery(null) + @"
-      }
-    }
-  }
-}";
-        }
-
-        private string CreateVulnerabilitiesConnectionQuery(string edgeCursor)
-        {
-            return @"vulnerabilities(first: 100, ecosystem: NUGET, orderBy: {field: UPDATED_AT, direction: ASC}" + (string.IsNullOrEmpty(edgeCursor) ? "" : $", after: \"{edgeCursor}\"") + @") {
-        edges {
-          cursor
-          node {
-            package {
-              name
-            }
-            vulnerableVersionRange
-            updatedAt
-          }
-        }
-      }";
-        }
-
-        private string CreateAdditionalQuery(SecurityAdvisory advisory)
-        {
-            return @"
-{
-  securityAdvisory(ghsaId: " + advisory.GhsaId + @") {
-    references {
-      url
-    }
-    severity
-    updatedAt
-    identifiers {
-      type
-      value
-    }
-    " + CreateVulnerabilitiesConnectionQuery(advisory.Vulnerabilities.Edges.Last().Cursor) + @"
-  }
-}";
         }
 
         private SecurityAdvisory MergeAdvisories(SecurityAdvisory advisory, SecurityAdvisory nextAdvisory)
         {
             // We want to keep the next advisory's data, but prepend the existing vulnerabilities that were returned in previous queries.
-            nextAdvisory.Vulnerabilities.Nodes = advisory.Vulnerabilities.Nodes.Concat(nextAdvisory.Vulnerabilities.Nodes);
-            nextAdvisory.Vulnerabilities.Edges = advisory.Vulnerabilities.Edges.Concat(nextAdvisory.Vulnerabilities.Edges);
-            // We are not querying the advisories feed so we do not want to advance the advisory cursor past the initial advisory.
+            nextAdvisory.Vulnerabilities.Edges = advisory.Vulnerabilities.Edges.Concat(
+                nextAdvisory.Vulnerabilities.Edges ?? Enumerable.Empty<Edge<SecurityVulnerability>>());
+            // We are not querying the advisories feed at this time so we do not want to advance the advisory cursor past what it was originally.
             nextAdvisory.UpdatedAt = advisory.UpdatedAt;
             return nextAdvisory;
         }

@@ -125,6 +125,10 @@ namespace GitHubVulnerabilities2Db
                 .As<IQueryService>();
 
             containerBuilder
+                .RegisterType<AdvisoryCollectorQueryBuilder>()
+                .As<IAdvisoryCollectorQueryBuilder>();
+
+            containerBuilder
                 .RegisterType<AdvisoryCollectorQueryService>()
                 .As<IAdvisoryCollectorQueryService>();
         }

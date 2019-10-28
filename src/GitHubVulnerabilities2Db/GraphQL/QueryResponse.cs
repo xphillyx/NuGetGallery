@@ -37,7 +37,6 @@ namespace GitHubVulnerabilities2Db.GraphQL
     public class ConnectionResponseData<TNode> where TNode : INode
     {
         public IEnumerable<Edge<TNode>> Edges { get; set; }
-        public IEnumerable<TNode> Nodes { get; set; }
     }
 
     /// <summary>
