@@ -162,11 +162,11 @@ namespace NuGetGallery
             }
         }
 
-        public DbSet<Vulnerability> Vulnerabilities
+        public DbSet<PackageVulnerability> Vulnerabilities
         {
             get
             {
-                return Set<Vulnerability>();
+                return Set<PackageVulnerability>();
             }
             set
             {
@@ -174,11 +174,11 @@ namespace NuGetGallery
             }
         }
 
-        public DbSet<PackageVulnerability> PackageVulnerabilities
+        public DbSet<VulnerablePackageVersionRange> VulnerableRanges
         {
             get
             {
-                return Set<PackageVulnerability>();
+                return Set<VulnerablePackageVersionRange>();
             }
             set
             {

@@ -14,9 +14,9 @@ using Xunit;
 
 namespace GitHubVulnerabilities2Db.Facts
 {
-    public class VulnerabilityIngestorFacts
+    public class AdvisoryIngestorFacts
     {
-        public class TheAdvisoryIngestMethodFacts : MethodFacts
+        public class TheIngestMethodFacts : MethodFacts
         {
             [Fact]
             public async Task IngestsNone()
@@ -27,8 +27,41 @@ namespace GitHubVulnerabilities2Db.Facts
                 // Assert
                 PackageVulnerabilityServiceMock
                     .Verify(
-                        x => x.UpdateVulnerability(It.IsAny<Vulnerability>(), It.IsAny<bool>()),
+                        x => x.UpdateVulnerabilityAsync(It.IsAny<PackageVulnerability>(), It.IsAny<bool>()),
                         Times.Never);
+            }
+
+            [Theory]
+            [InlineData(false)]
+            [InlineData(true)]
+            public async Task IngestsAdvisoryWithoutVulnerability(bool withdrawn)
+            {
+                // Arrange
+                var advisory = new SecurityAdvisory
+                {
+                    DatabaseId = 1,
+                    GhsaId = "ghsa",
+                    Severity = "MODERATE",
+                    References = new[] { new SecurityAdvisoryReference { Url = "https://vulnerable" } },
+                    WithdrawnAt = withdrawn ? new DateTime() : (DateTime?)null
+                };
+
+                PackageVulnerabilityServiceMock
+                    .Setup(x => x.UpdateVulnerabilityAsync(It.IsAny<PackageVulnerability>(), withdrawn))
+                    .Callback<PackageVulnerability, bool>((vulnerability, wasWithdrawn) =>
+                    {
+                        Assert.Equal(advisory.DatabaseId, vulnerability.GitHubDatabaseKey);
+                        Assert.Equal(PackageVulnerabilitySeverity.Moderate, vulnerability.Severity);
+                        Assert.Equal(advisory.References.Single().Url, vulnerability.ReferenceUrl);
+                    })
+                    .Returns(Task.CompletedTask)
+                    .Verifiable();
+
+                // Act
+                await Ingestor.Ingest(new[] { advisory });
+
+                // Assert
+                PackageVulnerabilityServiceMock.Verify();
             }
 
             [Theory]
@@ -37,19 +70,49 @@ namespace GitHubVulnerabilities2Db.Facts
             public async Task IngestsAdvisory(bool withdrawn)
             {
                 // Arrange
+                var securityVulnerability = new SecurityVulnerability
+                {
+                    Package = new SecurityVulnerabilityPackage { Name = "crested.gecko" },
+                    VulnerableVersionRange = "homeOnTheRange"
+                };
+
                 var advisory = new SecurityAdvisory
                 {
                     DatabaseId = 1,
-                    Description = "howdy",
-                    WithdrawnAt = withdrawn ? new DateTime() : (DateTime?)null
+                    GhsaId = "ghsa",
+                    Severity = "CRITICAL",
+                    References = new[] { new SecurityAdvisoryReference { Url = "https://vulnerable" } },
+                    WithdrawnAt = withdrawn ? new DateTime() : (DateTime?)null,
+                    Vulnerabilities = new ConnectionResponseData<SecurityVulnerability>
+                    {
+                        Edges = new[] 
+                        {
+                            new Edge<SecurityVulnerability>
+                            {
+                                Node = securityVulnerability
+                            }
+                        }
+                    }
                 };
 
+                securityVulnerability.Advisory = advisory;
+
+                var versionRange = VersionRange.Parse("[1.0.0, 1.0.0]");
+                GitHubVersionRangeParserMock
+                    .Setup(x => x.ToNuGetVersionRange(securityVulnerability.VulnerableVersionRange))
+                    .Returns(versionRange);
+
                 PackageVulnerabilityServiceMock
-                    .Setup(x => x.UpdateVulnerability(It.IsAny<Vulnerability>(), withdrawn))
-                    .Callback<Vulnerability, bool>((vulnerability, wasWithdrawn) =>
+                    .Setup(x => x.UpdateVulnerabilityAsync(It.IsAny<PackageVulnerability>(), withdrawn))
+                    .Callback<PackageVulnerability, bool>((vulnerability, wasWithdrawn) =>
                     {
                         Assert.Equal(advisory.DatabaseId, vulnerability.GitHubDatabaseKey);
-                        Assert.Equal(advisory.Description, vulnerability.Description);
+                        Assert.Equal(PackageVulnerabilitySeverity.Critical, vulnerability.Severity);
+                        Assert.Equal(advisory.References.Single().Url, vulnerability.ReferenceUrl);
+
+                        var packageVulnerability = vulnerability.AffectedRanges.Single();
+                        Assert.Equal(securityVulnerability.Package.Name, packageVulnerability.PackageId);
+                        Assert.Equal(versionRange.ToNormalizedString(), packageVulnerability.PackageVersionRange);
                     })
                     .Returns(Task.CompletedTask)
                     .Verifiable();
@@ -62,82 +125,20 @@ namespace GitHubVulnerabilities2Db.Facts
             }
         }
 
-        public class TheVulnerabilityIngestMethodFacts : MethodFacts
-        {
-            [Fact]
-            public async Task IngestsNone()
-            {
-                // Act
-                await Ingestor.Ingest(Enumerable.Empty<SecurityVulnerability>().ToList());
-
-                // Assert
-                PackageVulnerabilityServiceMock
-                    .Verify(
-                        x => x.UpdatePackageVulnerability(It.IsAny<PackageVulnerability>(), It.IsAny<bool>()),
-                        Times.Never);
-            }
-
-            [Theory]
-            [InlineData(false)]
-            [InlineData(true)]
-            public async Task IngestsVulnerability(bool withdrawn)
-            {
-                // Arrange
-                var advisory = new SecurityAdvisory
-                {
-                    DatabaseId = 1,
-                    Description = "howdy",
-                    WithdrawnAt = withdrawn ? new DateTime() : (DateTime?)null
-                };
-
-                var securityVulnerability = new SecurityVulnerability
-                {
-                    Advisory = advisory,
-                    Package = new SecurityVulnerabilityPackage { Name = "crested.gecko" },
-                    VulnerableVersionRange = "homeOnTheRange"
-                };
-
-                var versionRange = VersionRange.Parse("[1.0.0, 1.0.0]");
-                GitHubVersionRangeParserMock
-                    .Setup(x => x.ToNuGetVersionRange(securityVulnerability.VulnerableVersionRange))
-                    .Returns(versionRange);
-
-                PackageVulnerabilityServiceMock
-                    .Setup(x => x.UpdatePackageVulnerability(It.IsAny<PackageVulnerability>(), withdrawn))
-                    .Callback<PackageVulnerability, bool>((packageVulnerability, wasWithdrawn) =>
-                    {
-                        Assert.Equal(securityVulnerability.Package.Name, packageVulnerability.PackageId);
-                        Assert.Equal(versionRange.ToNormalizedString(), packageVulnerability.PackageVersionRange);
-
-                        var vulnerability = packageVulnerability.Vulnerability;
-                        Assert.Equal(advisory.DatabaseId, vulnerability.GitHubDatabaseKey);
-                        Assert.Equal(advisory.Description, vulnerability.Description);
-                    })
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
-
-                // Act
-                await Ingestor.Ingest(new[] { securityVulnerability });
-
-                // Assert
-                PackageVulnerabilityServiceMock.Verify();
-            }
-        }
-
         public class MethodFacts
         {
             public MethodFacts()
             {
                 PackageVulnerabilityServiceMock = new Mock<IPackageVulnerabilityService>();
                 GitHubVersionRangeParserMock = new Mock<IGitHubVersionRangeParser>();
-                Ingestor = new VulnerabilityIngestor(
+                Ingestor = new AdvisoryIngestor(
                     PackageVulnerabilityServiceMock.Object,
                     GitHubVersionRangeParserMock.Object);
             }
 
             public Mock<IPackageVulnerabilityService> PackageVulnerabilityServiceMock { get; }
             public Mock<IGitHubVersionRangeParser> GitHubVersionRangeParserMock { get; }
-            public VulnerabilityIngestor Ingestor { get; }
+            public AdvisoryIngestor Ingestor { get; }
         }
     }
 }

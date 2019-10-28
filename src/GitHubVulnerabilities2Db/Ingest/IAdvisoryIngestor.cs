@@ -2,17 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using GitHubVulnerabilities2Db.GraphQL;
 
 namespace GitHubVulnerabilities2Db.Ingest
 {
     /// <summary>
-    /// Processes new or updated nodes.
+    /// Processes new or updated <see cref="SecurityAdvisory"/>s.
     /// </summary>
-    public interface INodeIngestor<TNode> where TNode : INode
+    public interface IAdvisoryIngestor
     {
-        Task Ingest(IReadOnlyList<TNode> items);
+        Task Ingest(IReadOnlyList<SecurityAdvisory> advisories);
     }
 }

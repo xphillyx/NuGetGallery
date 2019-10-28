@@ -13,7 +13,7 @@ namespace NuGetGallery.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201910142159118_AddPackageVulnerabilities"; }
+            get { return "201910251815062_AddPackageVulnerabilities"; }
         }
         
         string IMigrationMetadata.Source

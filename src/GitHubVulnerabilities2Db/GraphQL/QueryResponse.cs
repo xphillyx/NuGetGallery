@@ -18,15 +18,17 @@ namespace GitHubVulnerabilities2Db.GraphQL
     /// </summary>
     public class QueryResponseData
     {
-        /// <summary>
-        /// https://developer.github.com/v4/object/securityvulnerabilityconnection/
-        /// </summary>
-        public ConnectionResponseData<SecurityVulnerability> SecurityVulnerabilities { get; set; }
+        public SecurityAdvisory SecurityAdvisory { get; set; }
 
         /// <summary>
         /// https://developer.github.com/v4/object/securityadvisoryconnection/
         /// </summary>
         public ConnectionResponseData<SecurityAdvisory> SecurityAdvisories { get; set; }
+
+        /// <summary>
+        /// https://developer.github.com/v4/object/securityvulnerabilityconnection/
+        /// </summary>
+        public ConnectionResponseData<SecurityVulnerability> SecurityVulnerabilities { get; set; }
     }
 
     /// <summary>

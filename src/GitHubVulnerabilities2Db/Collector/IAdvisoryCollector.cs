@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace GitHubVulnerabilities2Db.Collector
 {
-    public interface INodeCollector
+    public interface IAdvisoryCollector
     {
         /// <summary>
-        /// Queries for any new or updated nodes using a cursor, processes them, and then updates the cursor.
+        /// Queries for any new or updated advisories using a cursor, processes them, and then updates the cursor.
         /// </summary>
-        Task Process(CancellationToken token);
+        /// <remarks>Whether or not any advisories were processed.</remarks>
+        Task<bool> Process(CancellationToken token);
     }
 }

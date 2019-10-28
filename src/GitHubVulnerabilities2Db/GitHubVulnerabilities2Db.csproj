@@ -44,8 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collector\INodeCollector.cs" />
-    <Compile Include="Collector\NodeCollector.cs" />
+    <Compile Include="Collector\IAdvisoryCollector.cs" />
+    <Compile Include="Collector\AdvisoryCollector.cs" />
     <Compile Include="Configuration\InitializationConfiguration.cs" />
     <Compile Include="Gallery\ThrowingIndexingService.cs" />
     <Compile Include="Gallery\ThrowingAuditingService.cs" />
@@ -53,15 +53,14 @@
     <Compile Include="Gallery\ThrowingTelemetryService.cs" />
     <Compile Include="GraphQL\QueryResponse.cs" />
     <Compile Include="GraphQL\QueryService.cs" />
-    <Compile Include="Collector\DurableStringCursor.cs" />
     <Compile Include="GraphQL\Node.cs" />
-    <Compile Include="Collector\NodeCollectorQueryService.cs" />
+    <Compile Include="Collector\AdvisoryCollectorQueryService.cs" />
     <Compile Include="GraphQL\IQueryService.cs" />
-    <Compile Include="Collector\INodeCollectorQueryService.cs" />
+    <Compile Include="Collector\IAdvisoryCollectorQueryService.cs" />
     <Compile Include="Ingest\GitHubVersionRangeParser.cs" />
     <Compile Include="Ingest\IGitHubVersionRangeParser.cs" />
-    <Compile Include="Ingest\INodeIngestor.cs" />
-    <Compile Include="Ingest\VulnerabilityIngestor.cs" />
+    <Compile Include="Ingest\IAdvisoryIngestor.cs" />
+    <Compile Include="Ingest\AdvisoryIngestor.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

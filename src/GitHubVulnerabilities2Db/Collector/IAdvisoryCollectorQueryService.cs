@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,10 +11,10 @@ using NuGet.Services.Cursor;
 namespace GitHubVulnerabilities2Db.Collector
 {
     /// <summary>
-    /// Wrapper around <see cref="IQueryService"/> to make it easier to query for nodes using a cursor.
+    /// Wrapper around <see cref="IQueryService"/> to make it easier to query for <see cref="SecurityAdvisory"/>s using a cursor.
     /// </summary>
-    public interface INodeCollectorQueryService<TNode> where TNode : INode
+    public interface IAdvisoryCollectorQueryService
     {
-        Task<IReadOnlyList<Edge<TNode>>> GetSince(ReadCursor<string> cursor, CancellationToken token);
+        Task<IReadOnlyList<SecurityAdvisory>> GetAdvisoriesSinceAsync(ReadCursor<DateTimeOffset> cursor, CancellationToken token);
     }
 }

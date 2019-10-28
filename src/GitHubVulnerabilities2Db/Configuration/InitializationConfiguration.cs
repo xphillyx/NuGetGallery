@@ -30,11 +30,6 @@ namespace GitHubVulnerabilities2Db.Configuration
         /// <summary>
         /// The name of the blob to save the job's advisories cursor in.
         /// </summary>
-        public string AdvisoryCursorBlobName { get; set; } = "advisoriesCursor.json";
-
-        /// <summary>
-        /// The name of the blob to save the job's vulnerabilities cursor in.
-        /// </summary>
-        public string VulnerabilitiesCursorBlobName { get; set; } = "vulnerabilitiesCursor.json";
+        public string AdvisoryCursorBlobName { get; set; } = "cursor.json";
     }
 }
