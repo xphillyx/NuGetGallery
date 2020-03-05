@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -84,6 +85,7 @@ namespace NuGetGallery
 
         protected override void Load(ContainerBuilder builder)
         {
+            var moduleSw = Stopwatch.StartNew();
             var services = new ServiceCollection();
 
             var configuration = new ConfigurationService();
@@ -451,7 +453,7 @@ namespace NuGetGallery
 
             RegisterAuditingServices(builder, defaultAuditingService);
 
-            RegisterCookieComplianceService(builder, configuration, diagnosticsService);
+            RegisterCookieComplianceService(builder, configuration, diagnosticsService, telemetryClient);
 
             RegisterABTestServices(builder);
 
@@ -474,6 +476,8 @@ namespace NuGetGallery
 
             ConfigureAutocomplete(builder, configuration);
             builder.Populate(services);
+
+            telemetryClient.TrackMetric("JverDefaultDependenciesModuleMs", moduleSw.ElapsedMilliseconds);
         }
 
         // Internal for testing purposes
@@ -1424,22 +1428,35 @@ namespace NuGetGallery
                 .SingleInstance();
         }
 
-        private static void RegisterCookieComplianceService(ContainerBuilder builder, ConfigurationService configuration, DiagnosticsService diagnostics)
+        private static void RegisterCookieComplianceService(
+            ContainerBuilder builder,
+            ConfigurationService configuration,
+            DiagnosticsService diagnostics,
+            ITelemetryClient telemetryClient)
         {
             CookieComplianceServiceBase service = null;
             if (configuration.Current.IsHosted)
             {
                 var siteName = configuration.GetSiteRoot(true);
+                var sw = Stopwatch.StartNew();
                 service = GetAddInServices<ICookieComplianceService>(sp =>
                 {
                     sp.ComposeExportedValue("Domain", siteName);
                     sp.ComposeExportedValue<IDiagnosticsService>(diagnostics);
                 }).FirstOrDefault() as CookieComplianceServiceBase;
+                telemetryClient.TrackMetric("JverCookieComplianceServiceConstructorMs", sw.ElapsedMilliseconds);
 
                 if (service != null)
                 {
+                    sw.Restart();
                     // Initialize the service on App_Start to avoid any performance degradation during initial requests.
-                    HostingEnvironment.QueueBackgroundWorkItem(async cancellationToken => await service.InitializeAsync(siteName, diagnostics, cancellationToken));
+                    HostingEnvironment.QueueBackgroundWorkItem(async cancellationToken =>
+                    {
+                        telemetryClient.TrackMetric("JverCookieComplianceServiceBackgroundStartMs", sw.ElapsedMilliseconds);
+                        sw.Restart();
+                        await service.InitializeAsync(siteName, diagnostics, cancellationToken);
+                        telemetryClient.TrackMetric("JverCookieComplianceServiceInitializationMs", sw.ElapsedMilliseconds);
+                    });
                 }
             }
 
