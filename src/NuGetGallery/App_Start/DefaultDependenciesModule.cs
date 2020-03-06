@@ -523,6 +523,7 @@ namespace NuGetGallery
             }
 
             telemetryConfiguration.TelemetryInitializers.Add(new ClientInformationTelemetryEnricher());
+            telemetryConfiguration.TelemetryInitializers.Add(new ProcessIdTelemetryEnricher());
 
             // Add processors
             telemetryConfiguration.TelemetryProcessorChainBuilder.Use(next =>

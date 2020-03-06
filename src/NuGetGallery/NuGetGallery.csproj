@@ -581,6 +581,7 @@
     <Compile Include="Services\TyposquattingStringNormalization.cs" />
     <Compile Include="Services\UpdateDeprecationError.cs" />
     <Compile Include="Services\ValidationService.cs" />
+    <Compile Include="Telemetry\ProcessIdTelemetryEnricher.cs" />
     <Compile Include="Telemetry\ClientInformationTelemetryEnricher.cs" />
     <Compile Include="Telemetry\ClientTelemetryPIIProcessor.cs" />
     <Compile Include="Telemetry\QuietExceptionLogger.cs" />
