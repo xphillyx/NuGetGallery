@@ -36,14 +36,14 @@ namespace NuGetGallery
             ITelemetryService telemetryService,
             ISecurityPolicyService securityPolicyService,
             IEntitiesContext entitiesContext,
-            IContentObjectService contentObjectService)
+            IContentObjectService contentObjectService = null)
             : base(packageRepository, packageRegistrationRepository, certificateRepository)
         {
             _auditingService = auditingService ?? throw new ArgumentNullException(nameof(auditingService));
             _telemetryService = telemetryService ?? throw new ArgumentNullException(nameof(telemetryService));
             _securityPolicyService = securityPolicyService ?? throw new ArgumentNullException(nameof(securityPolicyService));
             _entitiesContext = entitiesContext ?? throw new ArgumentNullException(nameof(entitiesContext));
-            _contentObjectService = contentObjectService ?? throw new ArgumentNullException(nameof(contentObjectService));
+            _contentObjectService = contentObjectService;
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace NuGetGallery
             //   3. SQL Server actually picks the proper query plan. We have observed cases where this does not happen
             //      even with up-to-date statistics.
             //
-            var useRecompile = _contentObjectService.QueryHintConfiguration.ShouldUseRecompileForPackageDependents(id);
+            var useRecompile = _contentObjectService?.QueryHintConfiguration?.ShouldUseRecompileForPackageDependents(id) ?? true;
             using (_entitiesContext.WithQueryHint(useRecompile ? "RECOMPILE" : "OPTIMIZE FOR UNKNOWN"))
             {
                 result.TopPackages = GetListOfDependents(id);
