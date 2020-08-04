@@ -32,9 +32,7 @@ namespace GitHubVulnerabilities2Db.Collector
 
         public async Task<bool> ProcessAsync(CancellationToken token)
         {
-            await _cursor.Load(token);
-            var lastUpdated = _cursor.Value;
-            var advisories = await _queryService.GetAdvisoriesSinceAsync(lastUpdated, token);
+            var advisories = await _queryService.GetAdvisoriesSinceAsync(_cursor, token);
             var hasAdvisories = advisories != null && advisories.Any();
             _logger.LogInformation("Found {AdvisoryCount} new advisories to process", advisories?.Count() ?? 0);
             if (hasAdvisories)

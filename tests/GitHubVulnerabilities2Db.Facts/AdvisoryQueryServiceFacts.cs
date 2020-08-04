@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,6 +12,7 @@ using GitHubVulnerabilities2Db.Collector;
 using GitHubVulnerabilities2Db.GraphQL;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NuGet.Services.Cursor;
 using Xunit;
 
 namespace GitHubVulnerabilities2Db.Facts
@@ -20,7 +22,16 @@ namespace GitHubVulnerabilities2Db.Facts
         public AdvisoryQueryServiceFacts()
         {
             _token = CancellationToken.None;
-            _lastUpdated = new DateTimeOffset(2019, 10, 28, 1, 1, 1, TimeSpan.Zero);
+            _cursorMock = new Mock<ReadWriteCursor<DateTimeOffset>>();
+            _cursorMock
+                .Setup(x => x.Load(_token))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _cursorValue = new DateTimeOffset(2019, 10, 28, 1, 1, 1, TimeSpan.Zero);
+            _cursorMock
+                .Setup(x => x.Value)
+                .Returns(_cursorValue);
 
             _queryServiceMock = new Mock<IQueryService>();
             _maxResultsPerQuery = 3;
@@ -38,7 +49,8 @@ namespace GitHubVulnerabilities2Db.Facts
         private readonly Mock<IQueryService> _queryServiceMock;
         private readonly int _maxResultsPerQuery;
         private readonly Mock<IAdvisoryQueryBuilder> _queryBuilderMock;
-        private readonly DateTimeOffset _lastUpdated;
+        private readonly Mock<ReadWriteCursor<DateTimeOffset>> _cursorMock;
+        private readonly DateTimeOffset _cursorValue;
         private readonly CancellationToken _token;
         private readonly AdvisoryQueryService _service;
 
@@ -50,11 +62,12 @@ namespace GitHubVulnerabilities2Db.Facts
 
             // Act
             var results = await _service.GetAdvisoriesSinceAsync(
-                _lastUpdated, _token);
+                _cursorMock.Object, _token);
 
             // Assert
             Assert.Empty(results);
 
+            _cursorMock.Verify();
             _queryBuilderMock.Verify();
             _queryServiceMock.Verify();
         }
@@ -77,11 +90,12 @@ namespace GitHubVulnerabilities2Db.Facts
 
             // Act
             var results = await _service.GetAdvisoriesSinceAsync(
-                _lastUpdated, _token);
+                _cursorMock.Object, _token);
 
             // Assert
             Assert.Single(results, advisory);
 
+            _cursorMock.Verify();
             _queryBuilderMock.Verify();
             _queryServiceMock.Verify();
         }
@@ -121,7 +135,7 @@ namespace GitHubVulnerabilities2Db.Facts
 
             // Act
             var results = await _service.GetAdvisoriesSinceAsync(
-                _lastUpdated, _token);
+                _cursorMock.Object, _token);
 
             // Assert
             Assert.Single(results, advisory);
@@ -130,6 +144,7 @@ namespace GitHubVulnerabilities2Db.Facts
             Assert.Equal(id, node.Package.Name);
             Assert.Equal(range, node.VulnerableVersionRange);
 
+            _cursorMock.Verify();
             _queryBuilderMock.Verify();
             _queryServiceMock.Verify();
         }
@@ -157,12 +172,13 @@ namespace GitHubVulnerabilities2Db.Facts
 
             // Act
             var results = await _service.GetAdvisoriesSinceAsync(
-                _lastUpdated, _token);
+                _cursorMock.Object, _token);
 
             // Assert
             Assert.Equal(_maxResultsPerQuery * 2, results.Count());
             Assert.Equal(_maxResultsPerQuery * 2 - 1, results.Last().DatabaseId);
 
+            _cursorMock.Verify();
             _queryBuilderMock.Verify();
             _queryServiceMock.Verify();
         }
@@ -231,12 +247,13 @@ namespace GitHubVulnerabilities2Db.Facts
 
             // Act
             var results = await _service.GetAdvisoriesSinceAsync(
-                _lastUpdated, _token);
+                _cursorMock.Object, _token);
 
             // Assert
             Assert.Equal(_maxResultsPerQuery * 2, results.Single().Vulnerabilities.Edges.Count());
             Assert.Equal((_maxResultsPerQuery * 2 - 1).ToString(), results.Single().Vulnerabilities.Edges.Last().Cursor);
 
+            _cursorMock.Verify();
             _queryBuilderMock.Verify();
             _queryServiceMock.Verify();
         }
@@ -264,7 +281,7 @@ namespace GitHubVulnerabilities2Db.Facts
 
         private void SetupFirstQueryResult(QueryResponse response)
             => SetupQueryResult(
-                x => x.CreateSecurityAdvisoriesQuery(_lastUpdated, null),
+                x => x.CreateSecurityAdvisoriesQuery(_cursorValue, null),
                 response);
 
         private void SetupAfterCursorQueryResponse(string afterCursor, QueryResponse response)
