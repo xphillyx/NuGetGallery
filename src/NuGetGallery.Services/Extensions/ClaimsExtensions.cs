@@ -46,6 +46,16 @@ namespace NuGetGallery
             return HasBooleanClaim(identity, NuGetClaims.DiscontinuedLogin);
         }
 
+        public static bool VisitedAdminPage(ClaimsIdentity identity)
+        {
+            if (identity == null || !identity.IsAuthenticated)
+            {
+                return false;
+            }
+
+            return HasBooleanClaim(identity, NuGetClaims.VisitedAdminPage);
+        }
+
         public static void AddBooleanClaim(List<Claim> claims, string claimType)
         {
             claims.Add(new Claim(claimType, BooleanClaimDefault));

@@ -36,6 +36,11 @@ namespace NuGetGallery.Filters
                         }));
             }
 
+            if (Roles.Contains("Admins") && !ClaimsExtensions.VisitedAdminPage(identity))
+            {
+                filterContext.Result = new HttpUnauthorizedResult();
+            }
+
             base.OnAuthorization(filterContext);
         }
     }

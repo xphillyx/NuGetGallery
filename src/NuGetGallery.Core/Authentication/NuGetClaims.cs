@@ -58,6 +58,11 @@ namespace NuGetGallery.Authentication
         public const string ExternalLoginCredentialType = ClaimsDomain + "externallogincredentialtype";
 
         /// <summary>
+        /// The claim url for the claim that stores whether we had visited the admin page in the current session.
+        /// </summary>
+        public const string VisitedAdminPage = ClaimsDomain + "visitedAdmin";
+
+        /// <summary>
         /// The class for all possible values for <see cref="ExternalLoginCredentialType"/> claim.
         /// </summary>
         public class ExternalLoginCredentialValues
