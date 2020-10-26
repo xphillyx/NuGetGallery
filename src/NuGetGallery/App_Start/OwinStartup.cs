@@ -138,7 +138,7 @@ namespace NuGetGallery
                 AuthenticationType = AuthenticationTypes.External,
                 AuthenticationMode = AuthenticationMode.Passive,
                 CookieName = ".AspNet." + AuthenticationTypes.External,
-                ExpireTimeSpan = TimeSpan.FromMinutes(5)
+                ExpireTimeSpan = TimeSpan.FromMinutes(5),
             });
 
             // Attach non-cookie auth providers

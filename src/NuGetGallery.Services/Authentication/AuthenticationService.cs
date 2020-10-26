@@ -697,6 +697,8 @@ namespace NuGetGallery.Authentication
 
         public virtual async Task<AuthenticateExternalLoginResult> ReadExternalLoginCredential(IOwinContext context)
         {
+            var cookie = context.Request.Cookies[".AspNet." + AuthenticationTypes.External];
+            //context.Authentication.
             var result = await context.Authentication.AuthenticateAsync(AuthenticationTypes.External);
             if (result?.Identity?.Claims == null)
             {

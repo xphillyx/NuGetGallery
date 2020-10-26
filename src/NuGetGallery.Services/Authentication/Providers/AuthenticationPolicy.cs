@@ -12,14 +12,18 @@ namespace NuGetGallery.Authentication.Providers
 
         public bool EnforceMultiFactorAuthentication { get; set; }
 
-        private static string _enforceMutliFactorAuthenticationToken = "enforce_mfa";
-        private static string _emailToken = "email";
+        public bool ForceReenterCredentials { get; set; }
+
+        private const string _enforceMutliFactorAuthenticationToken = "enforce_mfa";
+        private const string _emailToken = "email";
+        private const string _forceReenterCredentials = "force_reenter_credentials";
 
         public IDictionary<string, string> GetProperties()
         {
             var dictionary = new Dictionary<string, string>();
             dictionary.Add(_emailToken, Email);
             dictionary.Add(_enforceMutliFactorAuthenticationToken, EnforceMultiFactorAuthentication.ToString());
+            dictionary.Add(_forceReenterCredentials, ForceReenterCredentials.ToString());
 
             return dictionary;
         }
@@ -28,12 +32,14 @@ namespace NuGetGallery.Authentication.Providers
         {
             if (properties != null
                 && properties.TryGetValue(_emailToken, out string email)
-                && properties.TryGetValue(_enforceMutliFactorAuthenticationToken, out string enforceMfaValue))
+                && properties.TryGetValue(_enforceMutliFactorAuthenticationToken, out string enforceMfaValue)
+                && properties.TryGetValue(_forceReenterCredentials, out string forceReenterCredentials))
             {
                 policy = new AuthenticationPolicy()
                 {
                     Email = email,
-                    EnforceMultiFactorAuthentication = Convert.ToBoolean(enforceMfaValue)
+                    EnforceMultiFactorAuthentication = Convert.ToBoolean(enforceMfaValue),
+                    ForceReenterCredentials = Convert.ToBoolean(forceReenterCredentials)
                 };
 
                 return true;

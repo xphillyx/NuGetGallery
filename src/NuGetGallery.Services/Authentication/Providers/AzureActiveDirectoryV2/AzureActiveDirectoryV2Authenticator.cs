@@ -129,7 +129,13 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
 
         public override ActionResult Challenge(string redirectUrl, AuthenticationPolicy policy)
         {
-            return new ChallengeResult(BaseConfig.AuthenticationType, redirectUrl, policy?.GetProperties());
+            var properties = policy?.GetProperties();
+            if (properties == null)
+            {
+                properties = new Dictionary<string, string>();
+            }
+            properties.Add("mymagicproperty", "42");
+            return new ChallengeResult(BaseConfig.AuthenticationType, redirectUrl, properties);
         }
 
         public override bool IsProviderForIdentity(ClaimsIdentity claimsIdentity)
@@ -241,6 +247,8 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
 
             var authenticationProperties = GetAuthenticationPropertiesFromProtocolMessage(notification.ProtocolMessage, notification.Options);
 
+            //notification.ProtocolMessage.MaxAge = "0";
+
             // AcrValues token control the multi-factor authentication, when supplied with any(which could be default or mfa), the user set policy for 2FA
             // is enforced. When explicitly set to mfa, the authentication is enforced with multi-factor auth. The LoginHint token, is useful for redirecting
             // an already logged in user directly to the multi-factor auth flow.
@@ -248,10 +256,14 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
             {
                 notification.ProtocolMessage.AcrValues = policy.EnforceMultiFactorAuthentication ? ACR_VALUES.MFA : ACR_VALUES.ANY;
                 notification.ProtocolMessage.LoginHint = policy.Email;
+                //if (policy.ForceReenterCredentials)
+                //{
+                //    notification.ProtocolMessage.MaxAge = "0";
+                //}
             }
             else
             {
-                notification.ProtocolMessage.AcrValues = ACR_VALUES.ANY;
+                notification.ProtocolMessage.AcrValues = "mfa";
             }
 
             // Set the redirect_uri token for the alternate domains of same gallery instance
@@ -261,9 +273,10 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
             }
 
             // We always want to show the options to select account when signing in and while changing account.
-            notification.ProtocolMessage.Prompt = SELECT_ACCOUNT;
+            notification.ProtocolMessage.Prompt = "login";
+            notification.ProtocolMessage.Parameters["amr_values"] = "ngcmfa";
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         private AuthenticationProperties GetAuthenticationPropertiesFromProtocolMessage(OpenIdConnectMessage message, OpenIdConnectAuthenticationOptions options)
