@@ -274,7 +274,6 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
 
             // We always want to show the options to select account when signing in and while changing account.
             notification.ProtocolMessage.Prompt = "login";
-            notification.ProtocolMessage.Parameters["amr_values"] = "ngcmfa";
 
             return Task.CompletedTask;
         }
