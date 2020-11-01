@@ -109,8 +109,10 @@
     <Compile Include="Certificates\CertificateFile.cs" />
     <Compile Include="Cookies\CookieComplianceService.cs" />
     <Compile Include="Cookies\CookieExpirationService.cs" />
+    <Compile Include="Cookies\DomainService.cs" />
     <Compile Include="Cookies\ICookieComplianceService.cs" />
     <Compile Include="Cookies\ICookieExpirationService.cs" />
+    <Compile Include="Cookies\IDomainService.cs" />
     <Compile Include="Cookies\NullCookieComplianceService.cs" />
     <Compile Include="CoreConstants.cs" />
     <Compile Include="CredentialTypes.cs" />

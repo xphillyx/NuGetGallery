@@ -478,9 +478,13 @@ namespace NuGetGallery
 
             RegisterCookieComplianceService(configuration, loggerFactory);
 
+            builder.RegisterType<DomainService>()
+                .As<IDomainService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<CookieExpirationService>()
                 .As<ICookieExpirationService>()
-                .SingleInstance();
+                .InstancePerLifetimeScope();
 
             RegisterABTestServices(builder);
 
