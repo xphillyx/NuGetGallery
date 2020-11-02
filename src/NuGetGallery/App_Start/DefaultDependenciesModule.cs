@@ -478,7 +478,7 @@ namespace NuGetGallery
 
             RegisterCookieComplianceService(configuration, loggerFactory);
 
-            builder.RegisterType<DomainService>()
+            builder.Register(d => new DomainService(loggerFactory.CreateLogger<DomainService>()))
                 .As<IDomainService>()
                 .InstancePerLifetimeScope();
 

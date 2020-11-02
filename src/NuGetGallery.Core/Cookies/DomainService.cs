@@ -1,13 +1,22 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Net;
 using System.Web;
+using Microsoft.Extensions.Logging;
 
 namespace NuGetGallery.Cookies
 {
     public class DomainService : IDomainService
     {
+        private readonly ILogger _logger;
+
+        public DomainService(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         public bool TryGetDomain(HttpContextBase httpContext, out string domain)
         {
             domain = null;
@@ -23,6 +32,8 @@ namespace NuGetGallery.Cookies
             }
 
             domain = request.Url.Host;
+
+            _logger.LogInformation("Request Url: {Url} and Host: {Host}", request.Url, request.Url.Host);
 
             return true;
         }
