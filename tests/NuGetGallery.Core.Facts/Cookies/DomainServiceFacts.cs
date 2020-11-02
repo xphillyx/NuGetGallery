@@ -6,6 +6,7 @@ using System.Web;
 using System.Collections.Generic;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace NuGetGallery.Cookies
 {
@@ -17,7 +18,7 @@ namespace NuGetGallery.Cookies
             public void TryGetDomainWithNullHttpContext()
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 // Act & Assert
                 Assert.False(domainService.TryGetDomain(httpContext: null, out string domain));
@@ -28,7 +29,7 @@ namespace NuGetGallery.Cookies
             public void TryGetDomainWithNullHttpRequest()
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 // Act & Assert
                 Assert.False(domainService.TryGetDomain(httpContext: Mock.Of<HttpContextBase>(), out string domain));
@@ -39,7 +40,7 @@ namespace NuGetGallery.Cookies
             public void TryGetDomainWithNullUrl()
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 var httpContext = new Mock<HttpContextBase>();
                 httpContext.Setup(c => c.Request).Returns(Mock.Of<HttpRequestBase>());
@@ -79,7 +80,7 @@ namespace NuGetGallery.Cookies
             public void TryGetDomain(string uri, string expectedDomain)
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 var httpContext = new Mock<HttpContextBase>();
                 var httpRequest = new Mock<HttpRequestBase>();
@@ -98,7 +99,7 @@ namespace NuGetGallery.Cookies
             public void TryGetRootDomainWithNullHttpContext()
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 // Act & Assert
                 Assert.False(domainService.TryGetRootDomain(httpContext: null, out string rootDomain));
@@ -109,7 +110,7 @@ namespace NuGetGallery.Cookies
             public void TryGetRootDomainWithNullHttpRequest()
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 // Act & Assert
                 Assert.False(domainService.TryGetRootDomain(httpContext: Mock.Of<HttpContextBase>(), out string rootDomain));
@@ -120,7 +121,7 @@ namespace NuGetGallery.Cookies
             public void TryGetRootDomainWithNullUrl()
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 var httpContext = new Mock<HttpContextBase>();
                 httpContext.Setup(c => c.Request).Returns(Mock.Of<HttpRequestBase>());
@@ -154,7 +155,7 @@ namespace NuGetGallery.Cookies
             public void TryGetRootDomainWithIpAddress(string uri)
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 var httpContext = new Mock<HttpContextBase>();
                 var httpRequest = new Mock<HttpRequestBase>();
@@ -194,7 +195,7 @@ namespace NuGetGallery.Cookies
             public void TryGetRootDomain(string uri, string expectedRootDomain)
             {
                 // Arrange
-                var domainService = new DomainService();
+                var domainService = new DomainService(Mock.Of<ILogger>());
 
                 var httpContext = new Mock<HttpContextBase>();
                 var httpRequest = new Mock<HttpRequestBase>();
