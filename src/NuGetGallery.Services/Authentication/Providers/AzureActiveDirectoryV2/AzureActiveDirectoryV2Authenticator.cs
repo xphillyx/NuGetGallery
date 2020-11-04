@@ -100,8 +100,8 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
             {
                 RedirectUri = siteRoot + _callbackPath,
                 PostLogoutRedirectUri = siteRoot,
-                Scope = OpenIdConnectScope.OpenIdProfile + " email",
-                ResponseType = OpenIdConnectResponseType.CodeIdToken,
+                Scope = "graph.microsoft.com/v1.0/me", //OpenIdConnectScope.OpenIdProfile + " email",
+                ResponseType = "id_token", //OpenIdConnectResponseType.CodeIdToken,
                 TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters() { ValidateIssuer = false },
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
@@ -254,7 +254,7 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
             // an already logged in user directly to the multi-factor auth flow.
             if (AuthenticationPolicy.TryGetPolicyFromProperties(authenticationProperties.Dictionary, out AuthenticationPolicy policy))
             {
-                notification.ProtocolMessage.AcrValues = policy.EnforceMultiFactorAuthentication ? ACR_VALUES.MFA : ACR_VALUES.ANY;
+                //notification.ProtocolMessage.AcrValues = policy.EnforceMultiFactorAuthentication ? ACR_VALUES.MFA : ACR_VALUES.ANY;
                 notification.ProtocolMessage.LoginHint = policy.Email;
                 //if (policy.ForceReenterCredentials)
                 //{
@@ -263,7 +263,7 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
             }
             else
             {
-                notification.ProtocolMessage.AcrValues = "mfa";
+                //notification.ProtocolMessage.AcrValues = "mfa";
             }
 
             // Set the redirect_uri token for the alternate domains of same gallery instance
@@ -273,7 +273,10 @@ namespace NuGetGallery.Authentication.Providers.AzureActiveDirectoryV2
             }
 
             // We always want to show the options to select account when signing in and while changing account.
-            notification.ProtocolMessage.Prompt = "login";
+            //notification.ProtocolMessage.Prompt = SELECT_ACCOUNT;
+            //notification.ProtocolMessage.MaxAge = "0";
+            //notification.ProtocolMessage.Parameters["mfa_max_age"] = "0";
+            //notification.ProtocolMessage.Parameters["amr_values"] = "ngcmfa";
 
             return Task.CompletedTask;
         }
