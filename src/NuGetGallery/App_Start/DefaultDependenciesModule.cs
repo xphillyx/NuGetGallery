@@ -482,7 +482,7 @@ namespace NuGetGallery
                 .As<ICookieExpirationService>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<DomainService>()
+            builder.Register(d => new DomainService(loggerFactory.CreateLogger<DomainService>()))
                 .As<IDomainService>()
                 .InstancePerLifetimeScope();
 
