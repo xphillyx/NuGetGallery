@@ -27,6 +27,13 @@ namespace NuGetGallery.Cookies
             "ai_session",
         };
 
+        private readonly IDomainService _domainService;
+
+        public CookieExpirationService(IDomainService domainService)
+        {
+            _domainService = domainService ?? throw new ArgumentNullException(nameof(domainService));
+        }
+
         public void ExpireAnalyticsCookies(HttpContextBase httpContext)
         {
             if (httpContext == null)
@@ -36,6 +43,12 @@ namespace NuGetGallery.Cookies
 
             Array.ForEach(GoogleAnalyticsCookies, cookieName => ExpireCookieByName(httpContext, cookieName));
             Array.ForEach(ApplicationInsightsCookies, cookieName => ExpireCookieByName(httpContext, cookieName));
+
+            if (_domainService.TryGetRootDomain(httpContext, out string rootDomain) && rootDomain != null)
+            {
+                // Expire legacy google analytics cookies with root domains
+                Array.ForEach(GoogleAnalyticsCookies, cookieName => ExpireCookieByName(httpContext, cookieName, rootDomain));
+            }
         }
 
         public void ExpireSocialMediaCookies(HttpContextBase httpContext) { }
@@ -62,12 +75,21 @@ namespace NuGetGallery.Cookies
 
             if (request.Cookies[cookieName] != null)
             {
-                response.Cookies[cookieName].Expires = CookieExpirationTime;
+                var cookie = new HttpCookie(cookieName);
+                cookie.Expires = CookieExpirationTime;
+                cookie.Secure = true;
+
+                if (!request.IsSecureConnection)
+                {
+                    cookie.Secure = false;
+                }
 
                 if (domain != null)
                 {
-                    response.Cookies[cookieName].Domain = domain;
+                    cookie.Domain = domain;
                 }
+
+                response.Cookies.Add(cookie);
             }
         }
     }

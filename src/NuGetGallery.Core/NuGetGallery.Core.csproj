@@ -19,6 +19,8 @@
     <Compile Remove="Cookies\ICookieComplianceService.cs" />
     <Compile Remove="Cookies\ICookieExpirationService.cs" />
     <Compile Remove="Cookies\NullCookieComplianceService.cs" />
+    <Compile Remove="Cookies\IDomainService.cs" />
+    <Compile Remove="Cookies\DomainService.cs" />
     <Compile Remove="Entities\SuspendDbExecutionStrategy.cs" />
     <Compile Remove="Extensions\PackageValidationSetExtensions.cs" />
     <Compile Remove="Extensions\ValidationIssueExtensions.cs" />

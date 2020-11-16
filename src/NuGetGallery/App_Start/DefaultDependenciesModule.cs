@@ -480,7 +480,11 @@ namespace NuGetGallery
 
             builder.RegisterType<CookieExpirationService>()
                 .As<ICookieExpirationService>()
-                .SingleInstance();
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<DomainService>()
+                .As<IDomainService>()
+                .InstancePerLifetimeScope();
 
             RegisterABTestServices(builder);
 
