@@ -13,11 +13,11 @@ namespace GitHubVulnerabilities2Db.Ingest
 {
     public class AdvisoryIngestor : IAdvisoryIngestor
     {
-        private readonly IPackageVulnerabilitiesManagementService _packageVulnerabilityService;
+        private readonly IPackageVulnerabilityService _packageVulnerabilityService;
         private readonly IGitHubVersionRangeParser _gitHubVersionRangeParser;
 
         public AdvisoryIngestor(
-            IPackageVulnerabilitiesManagementService packageVulnerabilityService,
+            IPackageVulnerabilityService packageVulnerabilityService,
             IGitHubVersionRangeParser gitHubVersionRangeParser)
         {
             _packageVulnerabilityService = packageVulnerabilityService ?? throw new ArgumentNullException(nameof(packageVulnerabilityService));

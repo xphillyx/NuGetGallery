@@ -33,8 +33,6 @@ namespace NuGetGallery
         public bool IsDotnetNewTemplatePackageType { get; set; }
         public bool IsAtomFeedEnabled { get; set; }
         public bool IsPackageDeprecationEnabled { get; set; }
-        public bool IsPackageVulnerabilitiesEnabled { get; set; }
-        public bool IsFuGetLinksEnabled { get; set; }
         public bool IsPackageRenamesEnabled { get; set; }
         public bool IsGitHubUsageEnabled { get; set; }
         public bool IsPackageDependentsEnabled { get; set; }
@@ -78,16 +76,12 @@ namespace NuGetGallery
         public RepositoryKind RepositoryType { get; private set; }
         public string ProjectUrl { get; set; }
         public string LicenseUrl { get; set; }
-        public string FuGetUrl { get; set; }
         public IReadOnlyCollection<string> LicenseNames { get; set; }
         public string LicenseExpression { get; set; }
         public IReadOnlyCollection<CompositeLicenseExpressionSegment> LicenseExpressionSegments { get; set; }
         public EmbeddedLicenseFileType EmbeddedLicenseType { get; set; }
 
         public PackageDeprecationStatus DeprecationStatus { get; set; }
-        public IReadOnlyCollection<PackageVulnerability> Vulnerabilities { get; set; }
-        public PackageVulnerabilitySeverity MaxVulnerabilitySeverity { get; set; }
-        public string PackageWarningIconTitle { get; set; }
         public string AlternatePackageId { get; set; }
         public string AlternatePackageVersion { get; set; }
         public string CustomMessage { get; set; }

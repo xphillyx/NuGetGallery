@@ -422,10 +422,6 @@ namespace NuGetGallery
                 .As<IPackageDeprecationService>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<PackageVulnerabilitiesService>()
-                .As<IPackageVulnerabilitiesService>()
-                .InstancePerLifetimeScope();
-
             builder.RegisterType<PackageRenameService>()
                 .As<IPackageRenameService>()
                 .InstancePerLifetimeScope();
@@ -446,8 +442,8 @@ namespace NuGetGallery
                 .As<IIconUrlTemplateProcessor>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<PackageVulnerabilitiesManagementService>()
-                .As<IPackageVulnerabilitiesManagementService>()
+            builder.RegisterType<PackageVulnerabilityService>()
+                .As<IPackageVulnerabilityService>()
                 .InstancePerLifetimeScope();
 
             services.AddHttpClient();

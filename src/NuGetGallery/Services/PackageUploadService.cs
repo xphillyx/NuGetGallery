@@ -22,7 +22,7 @@ namespace NuGetGallery
         private readonly IReservedNamespaceService _reservedNamespaceService;
         private readonly IValidationService _validationService;
         private readonly ICoreLicenseFileService _coreLicenseFileService;
-        private readonly IPackageVulnerabilitiesManagementService _vulnerabilityService;
+        private readonly IPackageVulnerabilityService _vulnerabilityService;
         private readonly IPackageMetadataValidationService _metadataValidationService;
 
         public PackageUploadService(
@@ -33,7 +33,7 @@ namespace NuGetGallery
             IValidationService validationService,
             ICoreLicenseFileService coreLicenseFileService,
             IDiagnosticsService diagnosticsService,
-            IPackageVulnerabilitiesManagementService vulnerabilityService,
+            IPackageVulnerabilityService vulnerabilityService,
             IPackageMetadataValidationService metadataValidationService)
         {
             _packageService = packageService ?? throw new ArgumentNullException(nameof(packageService));

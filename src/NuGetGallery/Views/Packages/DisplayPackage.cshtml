@@ -294,11 +294,6 @@
                 )
             }
 
-            @if (Model.IsPackageVulnerabilitiesEnabled && Model.Vulnerabilities != null)
-            {
-                @Html.Partial("_DisplayPackageVulnerabilities")
-            }
-
             @if (Model.IsPackageDeprecationEnabled && Model.DeprecationStatus != PackageDeprecationStatus.NotDeprecated)
             {
                 @Html.Partial("_DisplayPackageDeprecation")
@@ -375,7 +370,7 @@
 
                         @AppendAvailableSymbolsMessage(hasSymbolsPackageAvailable)
                         </text>
-                    )
+                     )
                 }
                 else if (Model.LatestSymbolsPackage.StatusKey == PackageStatus.FailedValidation)
                 {
@@ -420,7 +415,7 @@
                     @ViewHelpers.AlertWarning(
                         @<text>
                             The owner has unlisted this package.
-                            This could mean that the package is deprecated, has security vulnerabilities or shouldn't be used anymore.
+                            This could mean that the package is deprecated or shouldn't be used anymore.
                         </text>
                     )
                 }
@@ -700,9 +695,9 @@
                             {
                                 <th aria-hidden="true" abbr="Signature Information"></th>
                             }
-                            @if (Model.IsPackageDeprecationEnabled || Model.IsPackageVulnerabilitiesEnabled)
+                            @if (Model.IsPackageDeprecationEnabled)
                             {
-                                <th aria-hidden="true" abbr="Package Warnings"></th>
+                                <th aria-hidden="true" abbr="Deprecation Information"></th>
                             }
                         </tr>
                     </thead>
@@ -769,16 +764,41 @@
                                             </td>
                                         }
                                     }
+                                    @if (Model.IsPackageDeprecationEnabled)
+                                    {
+                                        if (packageVersion.DeprecationStatus == PackageDeprecationStatus.NotDeprecated)
+                                        {
+                                            <td class="package-icon-cell" aria-hidden="true"></td>
+                                        }
+                                        else
+                                        {
+                                            var deprecationTitle = packageVersion.Version;
+                                            var isLegacy = packageVersion.DeprecationStatus.HasFlag(PackageDeprecationStatus.Legacy);
+                                            var hasCriticalBugs = packageVersion.DeprecationStatus.HasFlag(PackageDeprecationStatus.CriticalBugs);
+                                            if (hasCriticalBugs)
+                                            {
+                                                if (isLegacy)
+                                                {
+                                                    deprecationTitle += " is deprecated because it's legacy and has critical bugs.";
+                                                }
+                                                else
+                                                {
+                                                    deprecationTitle += " is deprecated because it has critical bugs.";
+                                                }
+                                            }
+                                            else if (isLegacy)
+                                            {
+                                                deprecationTitle += " is deprecated because it's legacy and no longer maintained.";
+                                            }
+                                            else
+                                            {
+                                                deprecationTitle += " is deprecated.";
+                                            }
 
-                                    @if (string.IsNullOrEmpty(packageVersion.PackageWarningIconTitle))
-                                    {
-                                        <td class="package-icon-cell" aria-hidden="true"></td>
-                                    }
-                                    else
-                                    {
-                                        <td class="package-icon-cell">
-                                            <i class="ms-Icon ms-Icon--Warning package-icon" title="@packageVersion.PackageWarningIconTitle"></i>
-                                        </td>
+                                            <td class="package-icon-cell">
+                                                <i class="ms-Icon ms-Icon--Warning package-icon" title="@deprecationTitle"></i>
+                                            </td>
+                                        }
                                     }
                                 </tr>
                             }
@@ -1020,24 +1040,7 @@
                         <a href="@Url.ViewValidations(Model)">View validations</a>
                     </li>
                 }
-
-                @if (Model.IsFuGetLinksEnabled && !string.IsNullOrEmpty(Model.FuGetUrl))
-                {
-                    var disclaimer = "fuget.org is a 3rd party website, not controlled by Microsoft. This link is made available to you per the NuGet Terms of Use.";
-
-                    <li>
-                        <img class="icon"
-                             aria-label="@disclaimer" title="@disclaimer"
-                             src="@Url.Absolute("~/Content/gallery/img/fuget.svg")"
-                             @ViewHelpers.ImageFallback(Url.Absolute("~/Content/gallery/img/fuget-32x32.png")) />
-                        <a href="@Model.FuGetUrl" data-track="outbound-repository-url"
-                           aria-label="open in fuget.org explorer"
-                           title="Explore additional package info on fuget.org" rel="nofollow" target="_blank">
-                            Open in FuGet Package Explorer
-                        </a>
-                    </li>
-                }
-                </ul>
+            </ul>
             @if (Model.LicenseNames.AnySafe())
             {
                 <p>License info provided by <a href="http://sonatype.com/">Sonatype</a>.</p>

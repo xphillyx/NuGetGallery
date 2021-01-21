@@ -39,7 +39,6 @@ namespace NuGetGallery
                 allVersions,
                 currentUser,
                 packageKeyToDeprecation: null,
-                packageKeyToVulnerabilities: null,
                 packageRenames: null,
                 readmeResult: null);
 
