@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -509,6 +510,8 @@ namespace NuGetGallery
         [UIAuthorize]
         public virtual ActionResult Packages()
         {
+            var stopwatch = Stopwatch.StartNew();
+
             var currentUser = GetCurrentUser();
 
             var owners = new List<ListPackageOwnerViewModel> {
@@ -561,6 +564,10 @@ namespace NuGetGallery
                 WasMultiFactorAuthenticated = User.WasMultiFactorAuthenticated(),
                 IsCertificatesUIEnabled = ContentObjectService.CertificatesConfiguration?.IsUIEnabledForUser(currentUser) ?? false
             };
+
+            stopwatch.Stop();
+            TelemetryService.TrackManagePackagesQueryPerformance(stopwatch.ElapsedMilliseconds, packages?.Count() ?? 0);
+            
             return View(model);
         }
 
