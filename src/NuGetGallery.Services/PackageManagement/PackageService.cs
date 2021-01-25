@@ -700,7 +700,31 @@ namespace NuGetGallery
 
         public virtual IEnumerable<NuGetFramework> GetSupportedFrameworks(PackageArchiveReader package)
         {
-            return package.GetSupportedFrameworks();
+            return package.GetFiles()
+                .Select(FileToLibraryFrameworkString)
+                .Where(d => d != null)
+                .Distinct()
+                .Select(f => new NuGetFramework(f));
+        }
+
+        /// <summary>
+        /// Takes a file string (e.g. "lib\foo") and returns only the dir below lib, all other cases return null
+        /// </summary>
+        /// <param name="file">file path to analyze</param>
+        private string FileToLibraryFrameworkString(string file)
+        {
+            if (string.IsNullOrEmpty(file))
+            {
+                return null;
+            }
+
+            var fileDirs = file.Split('/');
+            if (fileDirs.Length < 2 || !fileDirs[0].Equals("lib", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            return fileDirs[1];
         }
 
         private static EmbeddedLicenseFileType GetEmbeddedLicenseType(PackageMetadata packageMetadata)
