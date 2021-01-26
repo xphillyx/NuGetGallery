@@ -4,7 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NuGet.Services.Validation;
 using NuGet.Versioning;
 using NuGetGallery.Areas.Admin.Services;
@@ -15,16 +18,73 @@ namespace NuGetGallery.Areas.Admin.Controllers
     public class ValidationController : AdminControllerBase
     {
         private readonly ValidationAdminService _validationAdminService;
+        private readonly IPackageValidationEnqueuer _validationQueue;
 
-        public ValidationController(ValidationAdminService validationAdminService)
+        public ValidationController(
+            ValidationAdminService validationAdminService,
+            IPackageValidationEnqueuer validationQueue)
         {
             _validationAdminService = validationAdminService ?? throw new ArgumentNullException(nameof(validationAdminService));
+            _validationQueue = validationQueue ?? throw new ArgumentNullException(nameof(validationQueue));
         }
 
         [HttpGet]
         public virtual ActionResult Index()
         {
             return View(nameof(Index), new ValidationPageViewModel());
+        }
+
+        [HttpGet]
+        public virtual ActionResult Start()
+        {
+            return View(nameof(Start), new StartValidationViewModel
+            {
+                ValidationTrackingId = Guid.NewGuid(),
+                ContentType = "VsCodeExtensionV1",
+                ContentUrl = "",
+                Properties = "{}",
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async virtual Task<ActionResult> Start(StartValidationViewModel model)
+        {
+            if (model.ValidationTrackingId == Guid.Empty)
+            {
+                ModelState.AddModelError(
+                    nameof(StartValidationViewModel.ValidationTrackingId),
+                    $"The The {nameof(StartValidationViewModel.Properties)} field must be a non-empty GUID.");
+            }
+
+            JObject properties = null;
+            try
+            {
+                properties = JObject.Parse(model.Properties);
+            }
+            catch (JsonReaderException)
+            {
+                ModelState.AddModelError(
+                    nameof(StartValidationViewModel.Properties),
+                    $"The {nameof(StartValidationViewModel.Properties)} field must be a valid JSON object.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(Start), model);
+            }
+
+            var contentUrl = new Uri(model.ContentUrl);
+            var data = PackageValidationMessageData.NewStartValidation(
+                model.ValidationTrackingId,
+                model.ContentType,
+                contentUrl,
+                properties);
+
+            await _validationQueue.SendMessageAsync(data);
+
+            TempData["Message"] = $"Started validation with tracking ID '{model.ValidationTrackingId}'.";
+            return RedirectToAction(nameof(Search), new { q = model.ValidationTrackingId });
         }
 
         [HttpGet]

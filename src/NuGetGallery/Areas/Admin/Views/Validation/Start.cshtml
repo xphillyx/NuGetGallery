@@ -1,0 +1,57 @@
+﻿@model StartValidationViewModel
+
+@{
+    ViewBag.Title = "Start validation";
+}
+
+<section role="main" class="container main-container">
+    <h2>Start validation</h2>
+
+    <div class="warning-panel">
+        <div class="icon-text alert alert-warning">
+            <i class="ms-Icon ms-Icon--Info" aria-hidden="true"></i>
+            Starting invalid validations will result in alerts!
+        </div>
+    </div>
+
+    <p>
+        You can start a validation for testing purposes.
+    </p>
+
+    @using (Html.BeginForm("Start", "Validation", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group @Html.HasErrorFor(m => m.ValidationTrackingId)">
+            @Html.ShowLabelFor(m => m.ValidationTrackingId)
+            @Html.ShowTextBoxFor(m => m.ValidationTrackingId)
+            @Html.ShowValidationMessagesFor(m => m.ValidationTrackingId)
+        </div>
+
+        <div class="form-group @Html.HasErrorFor(m => m.ContentType)">
+            @Html.ShowLabelFor(m => m.ContentType)
+            @Html.ShowTextBoxFor(m => m.ContentType)
+            @Html.ShowValidationMessagesFor(m => m.ContentType)
+        </div>
+
+        <div class="form-group @Html.HasErrorFor(m => m.ContentUrl)">
+            @Html.ShowLabelFor(m => m.ContentUrl)
+            @Html.ShowTextBoxFor(m => m.ContentUrl)
+            @Html.ShowValidationMessagesFor(m => m.ContentUrl)
+        </div>
+
+        <div class="form-group @Html.HasErrorFor(m => m.Properties)">
+            @Html.ShowLabelFor(m => m.Properties)
+            @Html.ShowTextAreaFor(m => m.Properties, 10, 100)
+            @Html.ShowValidationMessagesFor(m => m.Properties)
+        </div>
+
+        <div class="form-group has-error">
+            @Html.ShowValidationMessagesForEmpty()
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary form-control" value="Start" />
+        </div>
+    }
+</section>
+}
