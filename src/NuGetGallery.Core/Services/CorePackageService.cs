@@ -320,7 +320,8 @@ namespace NuGetGallery
                 includeUser: true,
                 includeSymbolPackages: true,
                 includeDeprecation: includeDeprecation,
-                includeDeprecationRelationships: includeDeprecationRelationships);
+                includeDeprecationRelationships: includeDeprecationRelationships,
+                includeSupportedFrameworks: false);
         }
 
         protected IQueryable<Package> GetPackagesByIdQueryable(
@@ -330,7 +331,8 @@ namespace NuGetGallery
             bool includeUser,
             bool includeSymbolPackages,
             bool includeDeprecation,
-            bool includeDeprecationRelationships)
+            bool includeDeprecationRelationships, 
+            bool includeSupportedFrameworks)
         {
             var packages = _packageRepository
                 .GetAll()
@@ -365,6 +367,11 @@ namespace NuGetGallery
             else if (includeDeprecation)
             {
                 packages = packages.Include(p => p.Deprecations);
+            }
+
+            if (includeSupportedFrameworks)
+            {
+                packages = packages.Include(p => p.SupportedFrameworks);
             }
 
             return packages;

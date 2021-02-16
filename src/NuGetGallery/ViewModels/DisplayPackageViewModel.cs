@@ -91,6 +91,7 @@ namespace NuGetGallery
         public string AlternatePackageId { get; set; }
         public string AlternatePackageVersion { get; set; }
         public string CustomMessage { get; set; }
+        public IReadOnlyCollection<string> SupportedFrameworks { get; set; }
 
         public IReadOnlyCollection<PackageRename> PackageRenames { get; set; }
         public string RenamedMessage { get; set; }

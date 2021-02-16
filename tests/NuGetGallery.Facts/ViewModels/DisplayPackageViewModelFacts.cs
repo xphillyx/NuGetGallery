@@ -839,6 +839,34 @@ namespace NuGetGallery.ViewModels
             Assert.Equal(null, model.RenamedMessage);
         }
 
+        [Theory]
+        [InlineData("netcoreapp2.1", ".NETCoreApp 2.1")]
+        [InlineData("netstandard2.1", ".NETStandard 2.1")]
+        [InlineData("net20", ".NETFramework 2.0")]
+        [InlineData("net50", "net5.0")]
+        public void ProvidesFriendlySupportedFrameworkName(string shortName, string friendlyName)
+        {
+            // Arrange
+            var package = new Package
+            {
+                Version = "1.0.0",
+                PackageRegistration = new PackageRegistration(),
+                SupportedFrameworks = new List<PackageFramework>
+                {
+                    new PackageFramework
+                    {
+                        TargetFramework = shortName
+                    }
+                }
+            };
+
+            // Act
+            var model = CreateDisplayPackageViewModel(package);
+
+            // Assert
+            Assert.Equal(friendlyName, model.SupportedFrameworks.ElementAt(0));
+        }
+
         private static DisplayPackageViewModel CreateDisplayPackageViewModel(
             Package package,
             User currentUser = null,

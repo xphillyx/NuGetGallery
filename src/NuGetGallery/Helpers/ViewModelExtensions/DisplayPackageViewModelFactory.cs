@@ -208,6 +208,11 @@ namespace NuGetGallery
                 viewModel.MaxVulnerabilitySeverity = default;
             }
 
+            viewModel.SupportedFrameworks =
+                package.SupportedFrameworks != null && package.SupportedFrameworks.Any()
+                    ? package.SupportedFrameworks.Select(tfm => tfm.FrameworkName?.ToFriendlyName()).ToList()
+                    : null;
+
             viewModel.PackageWarningIconTitle =
                 GetWarningIconTitle(viewModel.Version, deprecation, maxVulnerabilitySeverity);
 

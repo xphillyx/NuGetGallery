@@ -36,8 +36,9 @@ namespace NuGetGallery
         /// <summary>
         /// Returns all packages with an <see cref="Package.Id"/> of <paramref name="id"/>.
         /// Includes the <see cref="Package.PackageRegistration"/> fields based on <paramref name="includePackageRegistration"/>.
+        /// Includes the <see cref="Package.SupportedFrameworks"/> fields based on <paramref name="includeSupportedFrameworks"/>.
         /// </summary>
-        IReadOnlyCollection<Package> FindPackagesById(string id, bool includePackageRegistration);
+        IReadOnlyCollection<Package> FindPackagesById(string id, bool includePackageRegistration, bool includeSupportedFrameworks);
 
         /// <summary>
         /// Gets the package with the given ID and version when exists;
