@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -27,7 +28,7 @@ namespace NuGetGallery
         private const string Available = "Available";
         private const string Unavailable = "Unavailable";
         private const string Unconfigured = "Unconfigured";
-        private const string StatusMessageFormat = "NuGet Gallery instance {3} is {0}. SQL is {1}. Storage is {2}.";
+        private const string StatusMessageFormat = "NuGet Gallery instance {3} is {0}. SQL is {1}. Storage is {2}. Uptime is {4}.";
 
         private const string TestSqlQuery = "SELECT TOP(1) [Key] FROM GallerySettings WITH (NOLOCK)";
 
@@ -56,7 +57,15 @@ namespace NuGetGallery
                     AvailabilityMessage(galleryServiceAvailable),
                     AvailabilityMessage(sqlAzureAvailable),
                     AvailabilityMessage(storageAvailable),
-                    HostMachine.Name));
+                    HostMachine.Name),
+                    GetServiceUptime());
+        }
+
+        private string GetServiceUptime()
+        {
+            var proc = Process.GetCurrentProcess();
+            var message = $"{DateTime.Now - proc.StartTime}, started at {proc.StartTime}, current time {DateTime.Now}, CPU time: {proc.TotalProcessorTime}, {proc.ProcessName}";
+            return message;
         }
 
         private bool IsSqlAzureAvailable()
