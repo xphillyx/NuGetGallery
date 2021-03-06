@@ -25,6 +25,7 @@ namespace NuGetGallery
         private readonly ICoreReadmeFileService _coreReadmeFileService;
         private readonly IPackageVulnerabilitiesManagementService _vulnerabilityService;
         private readonly IPackageMetadataValidationService _metadataValidationService;
+        private readonly IDiagnosticsSource _trace;
 
         public PackageUploadService(
             IPackageService packageService,
@@ -46,10 +47,8 @@ namespace NuGetGallery
             _coreLicenseFileService = coreLicenseFileService ?? throw new ArgumentNullException(nameof(coreLicenseFileService));
             _coreReadmeFileService = coreReadmeFileService ?? throw new ArgumentNullException(nameof(coreReadmeFileService));
 
-            if (diagnosticsService == null)
-            {
-                throw new ArgumentNullException(nameof(diagnosticsService));
-            }
+            _trace = diagnosticsService?.SafeGetSource(nameof(PackageUploadService)) ?? throw new ArgumentNullException(nameof(diagnosticsService));
+
             _vulnerabilityService = vulnerabilityService ?? throw new ArgumentNullException(nameof(vulnerabilityService));
             _metadataValidationService = metadataValidationService ?? throw new ArgumentNullException(nameof(metadataValidationService));
         }
@@ -110,6 +109,8 @@ namespace NuGetGallery
 
         public async Task<PackageCommitResult> CommitPackageAsync(Package package, Stream packageFile)
         {
+            _trace.Verbose($"[Debug] Committing the package: {package}");
+
             if (package == null)
             {
                 throw new ArgumentNullException(nameof(package));
@@ -126,6 +127,8 @@ namespace NuGetGallery
             }
 
             await _validationService.UpdatePackageAsync(package);
+
+            _trace.Verbose($"[Debug] Updated the package by the validation service: {package}");
 
             if (package.PackageStatusKey != PackageStatus.Available
                 && package.PackageStatusKey != PackageStatus.Validating)
@@ -182,6 +185,8 @@ namespace NuGetGallery
                             package.PackageRegistration.Id,
                             package.Version);
 
+                        _trace.Verbose($"[Debug] Save the validation package {package} due to an edge case.");
+
                         return PackageCommitResult.Conflict;
                     }
                 }
@@ -228,6 +233,9 @@ namespace NuGetGallery
             catch (FileAlreadyExistsException ex)
             {
                 ex.Log();
+
+                _trace.Verbose($"[Debug] File already exists and throws the exception {package} with {ex.ToString()}.");
+
                 return PackageCommitResult.Conflict;
             }
 
@@ -263,6 +271,8 @@ namespace NuGetGallery
                         package.PackageRegistration.Id,
                         package.NormalizedVersion);
                 }
+
+                _trace.Verbose($"[Debug] Save the package {package} but throw the exception with {ex.ToString()}.");
 
                 if (IsConflict(ex))
                 {
