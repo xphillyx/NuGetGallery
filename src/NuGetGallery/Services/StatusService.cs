@@ -57,8 +57,8 @@ namespace NuGetGallery
                     AvailabilityMessage(galleryServiceAvailable),
                     AvailabilityMessage(sqlAzureAvailable),
                     AvailabilityMessage(storageAvailable),
-                    HostMachine.Name),
-                    GetServiceUptime());
+                    HostMachine.Name,
+                    GetServiceUptime()));
         }
 
         private string GetServiceUptime()
