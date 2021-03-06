@@ -109,7 +109,7 @@ namespace NuGetGallery
 
         public async Task<PackageCommitResult> CommitPackageAsync(Package package, Stream packageFile)
         {
-            _trace.Verbose($"[Debug] Committing the package: {package}");
+            _trace.Verbose($"[Debug] Committing the package: {package.Id}");
 
             if (package == null)
             {
@@ -128,7 +128,7 @@ namespace NuGetGallery
 
             await _validationService.UpdatePackageAsync(package);
 
-            _trace.Verbose($"[Debug] Updated the package by the validation service: {package}");
+            _trace.Verbose($"[Debug] Updated the package by the validation service: {package.Id}");
 
             if (package.PackageStatusKey != PackageStatus.Available
                 && package.PackageStatusKey != PackageStatus.Validating)
@@ -185,7 +185,7 @@ namespace NuGetGallery
                             package.PackageRegistration.Id,
                             package.Version);
 
-                        _trace.Verbose($"[Debug] Save the validation package {package} due to an edge case.");
+                        _trace.Verbose($"[Debug] Save the validation package {package.Id} due to an edge case.");
 
                         return PackageCommitResult.Conflict;
                     }
@@ -234,7 +234,7 @@ namespace NuGetGallery
             {
                 ex.Log();
 
-                _trace.Verbose($"[Debug] File already exists and throws the exception {package} with {ex.ToString()}.");
+                _trace.Verbose($"[Debug] File already exists and throws the exception {package.Id} with {ex.ToString()}.");
 
                 return PackageCommitResult.Conflict;
             }
@@ -272,7 +272,7 @@ namespace NuGetGallery
                         package.NormalizedVersion);
                 }
 
-                _trace.Verbose($"[Debug] Save the package {package} but throw the exception with {ex.ToString()}.");
+                _trace.Verbose($"[Debug] Save the package {package.Id} but throw the exception with {ex.ToString()}.");
 
                 if (IsConflict(ex))
                 {
