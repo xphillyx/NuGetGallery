@@ -109,8 +109,6 @@ namespace NuGetGallery
 
         public async Task<PackageCommitResult> CommitPackageAsync(Package package, Stream packageFile)
         {
-            _trace.Verbose($"[Debug] Committing the package: {package.Id}");
-
             if (package == null)
             {
                 throw new ArgumentNullException(nameof(package));
@@ -125,6 +123,8 @@ namespace NuGetGallery
             {
                 throw new ArgumentException($"{nameof(packageFile)} argument must be seekable stream", nameof(packageFile));
             }
+
+            _trace.Verbose($"[Debug] Committing the package: {package.Id}");
 
             await _validationService.UpdatePackageAsync(package);
 
