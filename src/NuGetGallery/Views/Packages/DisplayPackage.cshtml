@@ -178,17 +178,12 @@
 @helper CommandPanel(PackageManagerViewModel packageManager, bool active)
 {
     var thirdPartyPackageManager = packageManager as ThirdPartyPackageManagerViewModel;
-
-    var encodedInstallPackageCommands = packageManager.InstallPackageCommands.Select(c => Html.Encode(c));
-
-    var htmlInstallPackageCommandSeparator = string.Format("{0}</span><span class=\"install-command-row\">", Environment.NewLine);
-    var htmlInstallPackageCommands = "<span class=\"install-command-row\">" +
-        string.Join(htmlInstallPackageCommandSeparator, encodedInstallPackageCommands) + "</span>";
-
     <div role="tabpanel" class="tab-pane @(active ? "active" : string.Empty)" id="@packageManager.Id">
         <div>
             <div class="install-script-row">
-                <pre class="install-script" id="@packageManager.Id-text">@Html.Raw(htmlInstallPackageCommands)</pre>
+                @* Writing out the install command must be on a single line to avoid undesired whitespace in the <pre> tag. *@
+                @{ var cs = packageManager.InstallPackageCommands; }
+                <pre class="install-script" id="@packageManager.Id-text">@foreach (var c in cs) {<span class="install-command-row">@(c + Environment.NewLine)</span>}</pre>
                 <div class="copy-button">
                     <!--In order to statisfy the requirement to announce button status both on NVDA/Narrator, other screen reader like NVDA will
                         announce the data-content "Copied" everytime when we press button, however, it won't work with Narrator when we use bootstrap popover 
