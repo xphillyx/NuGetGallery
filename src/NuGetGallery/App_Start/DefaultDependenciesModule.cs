@@ -724,8 +724,8 @@ namespace NuGetGallery
                 var primaryConfiguration = c.ResolveKeyed<IBlobStorageConfiguration>(BindingKeys.PrimaryStatisticsKey);
                 var alternateConfiguration = c.ResolveKeyed<IBlobStorageConfiguration>(BindingKeys.AlternateStatisticsKey);
                 var featureFlagService = c.Resolve<IFeatureFlagService>();
-                var cloudReportService = new JsonAggregateStatsService(featureFlagService, primaryConfiguration, alternateConfiguration);
-                return cloudReportService;
+                var jsonAggregateStatsService = new JsonAggregateStatsService(featureFlagService, primaryConfiguration, alternateConfiguration);
+                return jsonAggregateStatsService;
             })
                 .AsSelf()
                 .As<IAggregateStatsService>()
