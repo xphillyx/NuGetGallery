@@ -718,9 +718,15 @@ namespace NuGetGallery
                 .SingleInstance()
                 .Keyed<IBlobStorageConfiguration>(BindingKeys.AlternateStatisticsKey);
 
-
             // when running on Windows Azure, we use a back-end job to calculate stats totals and store in the blobs
-            builder.RegisterInstance(new JsonAggregateStatsService(configuration.Current.AzureStorage_Statistics_ConnectionString, configuration.Current.AzureStorageReadAccessGeoRedundant))
+            builder.Register(c =>
+            {
+                var primaryConfiguration = c.ResolveKeyed<IBlobStorageConfiguration>(BindingKeys.PrimaryStatisticsKey);
+                var alternateConfiguration = c.ResolveKeyed<IBlobStorageConfiguration>(BindingKeys.AlternateStatisticsKey);
+                var featureFlagService = c.Resolve<IFeatureFlagService>();
+                var cloudReportService = new JsonAggregateStatsService(featureFlagService, primaryConfiguration, alternateConfiguration);
+                return cloudReportService;
+            })
                 .AsSelf()
                 .As<IAggregateStatsService>()
                 .SingleInstance();
