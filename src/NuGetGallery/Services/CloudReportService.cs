@@ -50,12 +50,12 @@ namespace NuGetGallery
         private CloudBlobContainer GetCloudBlobContainer()
         {
             var connectionString = _primaryStorageConfiguration.ConnectionString;
-            var readAccessGeoredundant = _primaryStorageConfiguration.ReadAccessGeoRedundant;
+            var readAccessGeoRedundant = _primaryStorageConfiguration.ReadAccessGeoRedundant;
 
             if(_alternateBlobStorageConfiguration != null && _featureFlagService.IsAlternateStatisticsSourceEnabled())
             {
                 connectionString = _alternateBlobStorageConfiguration.ConnectionString;
-                readAccessGeoredundant = _alternateBlobStorageConfiguration.ReadAccessGeoRedundant;
+                readAccessGeoRedundant = _alternateBlobStorageConfiguration.ReadAccessGeoRedundant;
             }
 
             var storageAccount = CloudStorageAccount.Parse(connectionString);
