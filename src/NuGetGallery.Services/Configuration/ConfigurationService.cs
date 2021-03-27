@@ -53,8 +53,8 @@ namespace NuGetGallery.Configuration
             var secretReaderFactory = new SecretReaderFactory(configuration);
             configuration._refreshableSecretReaderSettings = new RefreshableSecretReaderSettings();
             configuration.SecretReaderFactory = new RefreshableSecretReaderFactory(secretReaderFactory, configuration._refreshableSecretReaderSettings);
-            var secretReader = secretReaderFactory.CreateSecretReader();
-            var secretInjector = secretReaderFactory.CreateSecretInjector(secretReader);
+            var secretReader = configuration.SecretReaderFactory.CreateSecretReader();
+            var secretInjector = configuration.SecretReaderFactory.CreateSecretInjector(secretReader);
 
             configuration.SecretInjector = secretInjector;
 
