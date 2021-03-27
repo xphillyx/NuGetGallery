@@ -1391,8 +1391,8 @@ namespace NuGetGallery
             {
                 if (completedBindingKeys.Add(dependent.BindingKey))
                 {
-                    builder.Register(_ => new CloudBlobClientWrapper(
-                            dependent.AzureStorageConnectionString,
+                    builder.Register(c => new CloudBlobClientWrapper(
+                            dependent.AzureStorageConnectionStringFactory(c.Resolve<IAppConfiguration>()),
                             configuration.Current.AzureStorageReadAccessGeoRedundant))
                        .InstancePerLifetimeScope()
                        .Keyed<ICloudBlobClient>(dependent.BindingKey);
