@@ -77,13 +77,13 @@ namespace NuGetGallery.Configuration
             return TypeDescriptor.GetProperties(instance).Cast<PropertyDescriptor>().Where(p => !p.IsReadOnly);
         }
 
-        public IAppConfiguration Current => _lazyAppConfiguration.Value;
+        public IAppConfiguration Current => ResolveSettings().Result;
 
-        public FeatureConfiguration Features => _lazyFeatureConfiguration.Value;
+        public FeatureConfiguration Features => ResolveFeatures().Result;
 
-        public IServiceBusConfiguration ServiceBus => _lazyServiceBusConfiguration.Value;
+        public IServiceBusConfiguration ServiceBus => ResolveServiceBus().Result;
 
-        public IPackageDeleteConfiguration PackageDelete => _lazyPackageDeleteConfiguration.Value;
+        public IPackageDeleteConfiguration PackageDelete => ResolvePackageDelete().Result;
 
         public void BlockUncachedSecretReads()
         {
