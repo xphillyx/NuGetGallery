@@ -132,6 +132,12 @@ namespace NuGetGallery
                 .As<IConfigurationFactory>()
                 .As<IGalleryConfigurationService>();
 
+            builder.RegisterInstance(configuration.SecretReaderFactory)
+                .As<IRefreshableSecretReaderFactory>();
+
+            builder.RegisterType<SecretRefresher>()
+                .As<ISecretRefresher>();
+
             builder.Register(c => configuration.Current)
                 .AsSelf()
                 .AsImplementedInterfaces();

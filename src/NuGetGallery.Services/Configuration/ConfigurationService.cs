@@ -41,6 +41,7 @@ namespace NuGetGallery.Configuration
             SettingPrefix + "ValidationSqlServer" };
 
         public ISecretInjector SecretInjector { get; set; }
+        public RefreshableSecretReaderFactory SecretReaderFactory { get; private set; }
 
         /// <summary>
         /// Initializes the configuration service and associates a secret injector based on the configured KeyVault
@@ -51,7 +52,7 @@ namespace NuGetGallery.Configuration
             var configuration = new ConfigurationService();
             var secretReaderFactory = new SecretReaderFactory(configuration);
             configuration._refreshableSecretReaderSettings = new RefreshableSecretReaderSettings();
-            var refreshableSecretReaderFactory = new RefreshableSecretReaderFactory(secretReaderFactory, configuration._refreshableSecretReaderSettings);
+            configuration.SecretReaderFactory = new RefreshableSecretReaderFactory(secretReaderFactory, configuration._refreshableSecretReaderSettings);
             var secretReader = secretReaderFactory.CreateSecretReader();
             var secretInjector = secretReaderFactory.CreateSecretInjector(secretReader);
 

@@ -127,7 +127,9 @@
     <Compile Include="Configuration\PackageDeleteConfiguration.cs" />
     <Compile Include="Configuration\QueryHintConfiguration.cs" />
     <Compile Include="Configuration\SecretReader\EmptySecretReaderFactory.cs" />
+    <Compile Include="Configuration\SecretReader\ISecretRefresher.cs" />
     <Compile Include="Configuration\SecretReader\SecretReaderFactory.cs" />
+    <Compile Include="Configuration\SecretReader\SecretRefresher.cs" />
     <Compile Include="Configuration\ServiceBusConfiguration.cs" />
     <Compile Include="Configuration\SimpleBlobStorageConfiguration.cs" />
     <Compile Include="Configuration\SymbolsConfiguration.cs" />

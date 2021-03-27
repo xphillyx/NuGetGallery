@@ -154,13 +154,31 @@ namespace NuGetGallery
                 auther.Startup(config, app).Wait();
             }
 
-            config.BlockUncachedSecretReads();
-
             var featureFlags = DependencyResolver.Current.GetService<IFeatureFlagCacheService>();
             if (featureFlags != null)
             {
                 StartFeatureFlags(featureFlags);
             }
+
+            config.BlockUncachedSecretReads();
+
+            var secretRefresher = DependencyResolver.Current.GetService<ISecretRefresher>();
+
+            HostingEnvironment.QueueBackgroundWorkItem(async cancellationToken =>
+            {
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        await secretRefresher.RefreshContinuouslyAsync(cancellationToken);
+                    }
+                    catch
+                    {
+                        // :(
+                        await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                    }
+                }
+            });
 
             // Catch unobserved exceptions from threads before they cause IIS to crash:
             TaskScheduler.UnobservedTaskException += (sender, exArgs) =>
