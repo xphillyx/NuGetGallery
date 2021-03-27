@@ -154,6 +154,8 @@ namespace NuGetGallery
                 auther.Startup(config, app).Wait();
             }
 
+            config.BlockUncachedSecretReads();
+
             var featureFlags = DependencyResolver.Current.GetService<IFeatureFlagCacheService>();
             if (featureFlags != null)
             {

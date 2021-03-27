@@ -38,5 +38,10 @@ namespace NuGetGallery.Configuration
         /// <param name="settingName">Setting name.</param>
         /// <returns>Setting value.</returns>
         string ReadRawSetting(string settingName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void BlockUncachedSecretReads();
     }
 }

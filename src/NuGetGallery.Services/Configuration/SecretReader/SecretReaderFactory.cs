@@ -73,7 +73,7 @@ namespace NuGetGallery.Configuration.SecretReader
                 secretReader = new EmptySecretReader();
             }
 
-            return new CachingSecretReader(secretReader, refreshIntervalSec: SecretCachingRefreshInterval);
+            return secretReader;
         }
 
         private bool GetOptionalKeyVaultBoolSettingValue(string settingName, bool defaultValue)

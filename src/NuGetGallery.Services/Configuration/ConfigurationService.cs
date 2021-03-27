@@ -26,6 +26,7 @@ namespace NuGetGallery.Configuration
         protected const string PackageDeletePrefix = "PackageDelete.";
 
         private bool _notInCloudService;
+        private RefreshableSecretReaderSettings _refreshableSecretReaderSettings;
         private readonly Lazy<string> _httpSiteRootThunk;
         private readonly Lazy<string> _httpsSiteRootThunk;
         private readonly Lazy<IAppConfiguration> _lazyAppConfiguration;
@@ -49,6 +50,8 @@ namespace NuGetGallery.Configuration
         {
             var configuration = new ConfigurationService();
             var secretReaderFactory = new SecretReaderFactory(configuration);
+            configuration._refreshableSecretReaderSettings = new RefreshableSecretReaderSettings();
+            var refreshableSecretReaderFactory = new RefreshableSecretReaderFactory(secretReaderFactory, configuration._refreshableSecretReaderSettings);
             var secretReader = secretReaderFactory.CreateSecretReader();
             var secretInjector = secretReaderFactory.CreateSecretInjector(secretReader);
 
@@ -80,6 +83,11 @@ namespace NuGetGallery.Configuration
         public IServiceBusConfiguration ServiceBus => _lazyServiceBusConfiguration.Value;
 
         public IPackageDeleteConfiguration PackageDelete => _lazyPackageDeleteConfiguration.Value;
+
+        public void BlockUncachedSecretReads()
+        {
+            _refreshableSecretReaderSettings.BlockUncachedReads = true;
+        }
 
         /// <summary>
         /// Gets the site root using the specified protocol
