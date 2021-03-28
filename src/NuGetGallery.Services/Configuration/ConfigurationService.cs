@@ -77,7 +77,7 @@ namespace NuGetGallery.Configuration
             return TypeDescriptor.GetProperties(instance).Cast<PropertyDescriptor>().Where(p => !p.IsReadOnly);
         }
 
-        public IAppConfiguration Current => ResolveSettings().Result;
+        public virtual IAppConfiguration Current => ResolveSettings().Result;
 
         public FeatureConfiguration Features => ResolveFeatures().Result;
 
