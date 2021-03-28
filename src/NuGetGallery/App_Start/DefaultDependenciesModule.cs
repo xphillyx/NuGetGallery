@@ -98,14 +98,23 @@ namespace NuGetGallery
                 .SingleInstance();
 
             // Register the ILoggerFactory and configure AppInsights.
+            var currentConfiguration = configuration.Current;
             var applicationInsightsConfiguration = ConfigureApplicationInsights(
-                configuration.Current,
+                currentConfiguration,
                 out ITelemetryClient telemetryClient);
 
             var loggerConfiguration = LoggingSetup.CreateDefaultLoggerConfiguration(withConsoleLogger: false);
             var loggerFactory = LoggingSetup.CreateLoggerFactory(
                 loggerConfiguration,
                 telemetryConfiguration: applicationInsightsConfiguration.TelemetryConfiguration);
+
+            var featuresConfiguration = configuration.Features;
+            var serviceBusConfiguration = configuration.ServiceBus;
+            var packageDeleteConfiguration = configuration.PackageDelete;
+            secretInjector.InjectAsync(currentConfiguration.SqlConnectionString).Wait();
+            secretInjector.InjectAsync(currentConfiguration.SqlConnectionStringSupportRequest).Wait();
+            secretInjector.InjectAsync(currentConfiguration.SqlConnectionStringValidation).Wait();
+            secretInjector.InjectAsync(currentConfiguration.SqlReadOnlyReplicaConnectionString).Wait();
 
             builder.RegisterInstance(applicationInsightsConfiguration.TelemetryConfiguration)
                 .AsSelf()
