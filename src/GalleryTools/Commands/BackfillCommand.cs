@@ -11,19 +11,21 @@ using NuGet.Packaging;
 using NuGet.Services.Entities;
 using NuGetGallery;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using GalleryTools.Utils;
-using Microsoft.IdentityModel.JsonWebTokens;
 using NuGet.Services.Sql;
 
 namespace GalleryTools.Commands
@@ -48,8 +50,12 @@ namespace GalleryTools.Commands
 
         protected virtual Expression<Func<Package, object>> QueryIncludes => null;
 
-
         protected IPackageService _packageService;
+
+        private static int DegreeOfParallelism => 16;
+
+        private static readonly SemaphoreSlim collectSemaphore = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim updateSemaphore = new SemaphoreSlim(1);
 
         public static void Configure<TCommand>(CommandLineApplication config) where TCommand : BackfillCommand<TMetadata>, new()
         {
@@ -147,73 +153,54 @@ namespace GalleryTools.Commands
                     var counter = 0;
                     var lastCreatedDate = default(DateTime?);
 
-                    foreach (var package in packages)
-                    {
-                        var id = package.PackageRegistration.Id;
-                        var version = package.NormalizedVersion;
-                        var idLowered = id.ToLowerInvariant();
-                        var versionLowered = version.ToLowerInvariant();
-
-                        try
+                    var packageBag = new ConcurrentBag<Package>(packages);
+                    await Repeat(
+                        async () =>
                         {
-                            var metadata = default(TMetadata);
-
-                            var nuspecUri =
-                                $"{flatContainerUri}/{idLowered}/{versionLowered}/{idLowered}.nuspec";
-                            using (var nuspecStream = await http.GetStreamAsync(nuspecUri))
+                            await Task.Yield();
+                            while (packageBag.TryTake(out var package))
                             {
-                                var document = LoadDocument(nuspecStream);
+                                var id = package.PackageRegistration.Id;
+                                var version = package.NormalizedVersion;
+                                var idLowered = id.ToLowerInvariant();
+                                var versionLowered = version.ToLowerInvariant();
 
-                                var nuspecReader = new NuspecReader(document);
-
-                                if (SourceType == MetadataSourceType.NuspecOnly)
+                                try
                                 {
-                                    metadata = ReadMetadata(nuspecReader);
+                                    var metadata = default(TMetadata);
+
+                                    var nuspecUri =
+                                        $"{flatContainerUri}/{idLowered}/{versionLowered}/{idLowered}.nuspec";
+                                    using (var nuspecStream = await http.GetStreamAsync(nuspecUri))
+                                    {
+                                        var document = LoadDocument(nuspecStream);
+
+                                        var nuspecReader = new NuspecReader(document);
+
+                                        if (SourceType == MetadataSourceType.NuspecOnly)
+                                        {
+                                            metadata = ReadMetadata(nuspecReader);
+                                        }
+                                        else if (SourceType == MetadataSourceType.Nupkg)
+                                        {
+                                            var nupkgUri =
+                                                $"{flatContainerUri}/{idLowered}/{versionLowered}/{idLowered}.{versionLowered}.nupkg";
+                                            metadata = await FetchMetadataAsync(http, nupkgUri, nuspecReader, id, version, logger);
+                                        }
+                                    }
+
+                                    if (ShouldWriteMetadata(metadata))
+                                    {
+                                        WriteMetadata(id, version, metadata, package.Created, csv, logger, ref counter, ref lastCreatedDate, cursor);
+                                    }
                                 }
-                                else if (SourceType == MetadataSourceType.Nupkg)
+                                catch (Exception e)
                                 {
-                                    var nupkgUri =
-                                        $"{flatContainerUri}/{idLowered}/{versionLowered}/{idLowered}.{versionLowered}.nupkg";
-                                    metadata = await FetchMetadataAsync(http, nupkgUri, nuspecReader, id, version, logger);
+                                    await logger.LogPackageError(id, version, e);
                                 }
                             }
-
-                            if (ShouldWriteMetadata(metadata))
-                            {
-                                var record = new PackageMetadata(id, version, metadata, package.Created);
-
-                                csv.WriteRecord(record);
-
-                                await csv.NextRecordAsync();
-
-                                logger.LogPackage(id, version, $"Metadata saved");
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            await logger.LogPackageError(id, version, e);
-                        }
-
-                        counter++;
-
-                        if (!lastCreatedDate.HasValue || lastCreatedDate < package.Created)
-                        {
-                            lastCreatedDate = package.Created;
-                        }
-
-                        if (counter >= CollectBatchSize)
-                        {
-                            logger.Log($"Writing {package.Created:u} to cursor...");
-                            await cursor.Write(package.Created);
-                            counter = 0;
-
-                            // Write a monitoring cursor (not locked) so for a large job we can inspect progress
-                            if (!string.IsNullOrEmpty(MonitoringCursorFileName))
-                            {
-                                File.WriteAllText(MonitoringCursorFileName, package.Created.ToString("G"));
-                            }
-                        }
-                    }
+                        }, DegreeOfParallelism
+                    );
 
                     if (counter > 0 && lastCreatedDate.HasValue)
                     {
@@ -246,52 +233,34 @@ namespace GalleryTools.Commands
                     packages = packages.Include(QueryIncludes);
                 }
 
-                using (var csv = CreateCsvReader(fileName))
-                {
-                    var counter = 0;
-                    var lastCreatedDate = default(DateTime?);
-
-                    var result = await TryReadMetadata(csv);
-
-                    while (result.Success)
+                var csvBag = new ConcurrentBag<PackageMetadata>(GetCsvMetadataAsync(fileName));
+                var counter = 0;
+                var lastCreatedDate = default(DateTime?);
+                await Repeat(
+                    async () =>
                     {
-                        var metadata = result.Metadata;
-
-                        if (metadata.Created >= startTime)
+                        await Task.Yield();
+                        while (csvBag.TryTake(out var metadata))
                         {
                             var package = packages.FirstOrDefault(p => p.PackageRegistration.Id == metadata.Id && p.NormalizedVersion == metadata.Version);
-
                             if (package != null)
                             {
                                 UpdatePackage(package, metadata.Metadata, context);
                                 logger.LogPackage(metadata.Id, metadata.Version, "Metadata updated.");
-
-                                counter++;
-
-                                if (!lastCreatedDate.HasValue || lastCreatedDate < package.Created)
-                                {
-                                    lastCreatedDate = metadata.Created;
-                                }
+                                CommitBatch(context, metadata, package.Created, logger, ref counter,
+                                    ref lastCreatedDate, cursor);
                             }
                             else
                             {
                                 await logger.LogPackageError(metadata.Id, metadata.Version, "Could not find package in the database.");
                             }
                         }
-
-                        if (counter >= UpdateBatchSize)
-                        {
-                            await CommitBatch(context, cursor, logger, metadata.Created);
-                            counter = 0;
-                        }
-
-                        result = await TryReadMetadata(csv);
-                    }
-
-                    if (counter > 0)
-                    {
-                        await CommitBatch(context, cursor, logger, lastCreatedDate);
-                    }
+                    }, DegreeOfParallelism
+                );
+                    
+                if (counter > 0)
+                {
+                    await CommitBatch(context, cursor, logger, lastCreatedDate);
                 }
             }
         }
@@ -305,6 +274,104 @@ namespace GalleryTools.Commands
         protected abstract void ConfigureClassMap(PackageMetadataClassMap map);
 
         protected abstract void UpdatePackage(Package package, TMetadata metadata, EntitiesContext context);
+
+        /// <summary>
+        /// Creates a number of tasks specified by <paramref name="degreeOfParallelism"/> using <paramref name="taskFactory"/> and then runs them in parallel.
+        /// </summary>
+        /// <param name="taskFactory">Creates each task to run.</param>
+        /// <param name="degreeOfParallelism">The number of tasks to create. Defaults to <see cref="ServicePointManager.DefaultConnectionLimit"/></param>
+        /// <returns>A task that completes when all tasks have completed.</returns>
+        private static Task Repeat(Func<Task> taskFactory, int? degreeOfParallelism = null)
+        {
+            return Task.WhenAll(
+                Enumerable
+                    .Repeat(taskFactory, degreeOfParallelism ?? ServicePointManager.DefaultConnectionLimit)
+                    .Select(f => f()));
+        }
+
+        private void WriteMetadata(string id, string version, TMetadata metadata, DateTime packageCreated,
+            CsvWriter csv, Logger logger, ref int counter, ref DateTime? lastCreatedDate, FileCursor cursor)
+        {
+            // We need this to be thread-safe as it's called by multiple tasks concurrently
+            collectSemaphore.Wait();
+
+            try
+            {
+                if (ShouldWriteMetadata(metadata))
+                {
+                    var record = new PackageMetadata(id, version, metadata, packageCreated);
+
+                    csv.WriteRecord(record);
+
+                    csv.NextRecordAsync().Wait();
+
+                    logger.LogPackage(id, version, $"Metadata saved");
+                }
+
+                counter++;
+
+                if (!lastCreatedDate.HasValue || lastCreatedDate < packageCreated)
+                {
+                    lastCreatedDate = packageCreated;
+                }
+
+                if (counter >= CollectBatchSize)
+                {
+                    logger.Log($"Writing {packageCreated:u} to cursor...");
+                    cursor.Write(packageCreated).Wait();
+                    counter = 0;
+
+                    // Write a monitoring cursor (not locked) so for a large job we can inspect progress
+                    if (!string.IsNullOrEmpty(MonitoringCursorFileName))
+                    {
+                        File.WriteAllText(MonitoringCursorFileName, packageCreated.ToString("G"));
+                    }
+                }
+            }
+            finally
+            {
+                collectSemaphore.Release();
+            }
+        }
+
+        private IEnumerable<PackageMetadata> GetCsvMetadataAsync(string fileName)
+        {
+            using (var csv = CreateCsvReader(fileName))
+            {
+                var result = TryReadMetadata(csv).Result;
+
+                while (result.Success)
+                {
+                    yield return result.Metadata;
+                }
+            }
+        }
+
+        private void CommitBatch(EntitiesContext context, PackageMetadata metadata, DateTime packageCreated,
+            Logger logger, ref int counter, ref DateTime? lastCreatedDate, FileCursor cursor)
+        {
+            // We need this to be thread-safe as it's called by multiple tasks concurrently
+            updateSemaphore.Wait();
+
+            try
+            {
+                if (!lastCreatedDate.HasValue || lastCreatedDate < packageCreated)
+                {
+                    lastCreatedDate = metadata.Created;
+                }
+
+                counter++;
+                if (counter >= UpdateBatchSize)
+                {
+                    CommitBatch(context, cursor, logger, metadata.Created).Wait();
+                    counter = 0;
+                }
+            }
+            finally
+            {
+                updateSemaphore.Release();
+            }
+        }
 
         private static async Task<string> GetFlatContainerUri(Uri serviceDiscoveryUri)
         {
