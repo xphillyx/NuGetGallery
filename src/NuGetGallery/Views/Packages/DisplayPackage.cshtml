@@ -489,6 +489,41 @@
 
             @if (!Model.Deleted)
             {
+                //start of body
+                //tabs 
+        <div class="container-fluidS">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#ReadMe" aria-controls="ReadMe" role="tab" data-toggle="tab">README</a></li>
+                <li role="presentation"><a href="#Frameworks" aria-controls="Frameworks" role="tab" data-toggle="tab">Frameworks</a></li>
+                <li role="presentation"><a href="#Dependencies" aria-controls="Dependencies" role="tab" data-toggle="tab">Dependencies</a></li>
+                <li role="presentation"><a href="#UsedBy" aria-controls="UsedBy" role="tab" data-toggle="tab">Used By</a></li>
+                <li role="presentation"><a href="#Versions" aria-controls="Versions" role="tab" data-toggle="tab">Versions</a></li>
+                <li role="presentation"><a href="#Installation" aria-controls="Installation" role="tab" data-toggle="tab">Installation</a></li>
+            </ul>
+            
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="ReadMe">
+                    <p>Add ReadMe for users of your package</p>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="Frameworks">
+                    <p>Frameworks here</p>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="Dependencies">
+                    <p>Dependencies here</p>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="UsedBy">
+                    <p>Used By here</p>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="Versions">
+                    <p>Versions here</p>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="Installation">
+                    <p>Installation Instructions here</p>
+                </div>
+            </div>
+        </div>
+
+
                 if (Model.ReadMeHtml != null)
                 {
                     <div id="readme-collapser-container">
@@ -532,7 +567,7 @@
 
                     <p>@Html.PreFormattedText(Model.ReleaseNotes, Config)</p>
                 }
-
+                
                 if (Model.Dependencies.DependencySets == null)
                 {
                     if (Model.CanDisplayPrivateMetadata)
