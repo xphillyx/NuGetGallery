@@ -77,7 +77,7 @@ $(function () {
     }
 
     // Configure expanders
-    window.nuget.configureExpanderHeading("dependency-groups");
+    //window.nuget.configureExpanderHeading("dependency-groups");
     window.nuget.configureExpanderHeading("used-by");
     window.nuget.configureExpanderHeading("version-history");
     window.nuget.configureExpander(
