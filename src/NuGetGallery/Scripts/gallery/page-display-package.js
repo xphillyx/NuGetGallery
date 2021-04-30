@@ -123,21 +123,21 @@ $(function () {
         $(this).closest('form').submit();
     })
 
-    var storage = window['localStorage'];
-    if (storage) {
-        var key = 'preferred_tab';
+    //var storage = window['localStorage'];
+    //if (storage) {
+    //    var key = 'preferred_tab';
 
         // Restore preferred tab selection from localStorage.
-        var preferredTab = storage.getItem(key);
-        if (preferredTab) {
-            $('#' + preferredTab).tab('show');
-        }
+    //    var preferredTab = storage.getItem(key);
+    //    if (preferredTab) {
+    //        $('#' + preferredTab).tab('show');
+    //    }
 
-        // Make sure we save the user's preferred tab to localStorage.
-        $('.package-manager-tab').on('shown.bs.tab', function (e) {
-            storage.setItem(key, e.target.id);
-        });
-    }
+    //    // Make sure we save the user's preferred tab to localStorage.
+    //    $('.package-manager-tab').on('shown.bs.tab', function (e) {
+    //        storage.setItem(key, e.target.id);
+    //    });
+    //}
 
     if (window.nuget.isGaAvailable()) {
         // Emit a Google Analytics event when the user expands or collapses the Dependencies section.

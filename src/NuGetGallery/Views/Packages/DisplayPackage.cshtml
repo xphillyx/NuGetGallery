@@ -833,7 +833,8 @@
                             @{ firstPackageManager = true; }
                             @foreach (var packageManager in packageManagers)
                             {
-                                @CommandPanel(packageManager, active: firstPackageManager)
+                                <h2>@packageManager.Name</h2>
+                                <p>@CommandPanel(packageManager, active: true)</p>
 
                                 firstPackageManager = false;
                             }
