@@ -38,7 +38,7 @@ namespace NuGetGallery
             viewModel.Authors = package.FlattenedAuthors;
             viewModel.MinClientVersion = package.MinClientVersion;
             viewModel.Owners = package.PackageRegistration?.Owners?.Select(GetBasicUserViewModel).ToList();
-            viewModel.IsVerified = package.PackageRegistration?.IsVerified;
+            viewModel.IsVerified = true; //package.PackageRegistration?.IsVerified;
 
             viewModel.CanDisplayPrivateMetadata = CanPerformAction(currentUser, package, ActionsRequiringPermissions.DisplayPrivatePackageMetadata);
             viewModel.CanEdit = CanPerformAction(currentUser, package, ActionsRequiringPermissions.EditPackage);
