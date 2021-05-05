@@ -237,15 +237,15 @@
 
 @*Start of header*@
 <section role="main" class="container main-container page-package-details">
-    <div class="row">
-        <aside aria-label="Package icon" class="col-sm-1">
+    <div class="row"> @*header row*@
+        <aside aria-label="Package icon" class="col-sm-1"> @*icon column*@
             <h3>
                 <img class="package-icon img-responsive" aria-hidden="true" alt=""
                      src="@(PackageHelper.ShouldRenderUrl(Model.IconUrl) ? Model.IconUrl : Url.Absolute("~/Content/gallery/img/default-package-icon.svg"))"
                      @ViewHelpers.ImageFallback(Url.Absolute("~/Content/gallery/img/default-package-icon-256x256.png")) />
             </h3>
         </aside>
-        <article class="col-sm-8 package-details-main">
+        <article class="col-sm-8 package-details-main">@*body columns*@
             <div class="package-title">
                 <h1>
                     @Html.BreakWord(Model.Id)
@@ -862,6 +862,7 @@
                                 </a>
                             }
                         </div>
+                        @*look at making this into a dropdown tab*@
                         <div role="tabpanel" class="tab-pane" id="Installation">
                             <div class="install-tabs">
                                 <ul class="nav nav-tabs" role="tablist">
@@ -1264,7 +1265,7 @@
         </div>*@
         </article>
         @*start of sidebar*@
-    <aside aria-label="Package details info" class="col-sm-3 package-details-info">
+    <aside aria-label="Package details info" class="col-sm-3 package-details-info">@*columns for sidebar*@
         <h2>Downloads</h2>
         <ul class="list-unstyled ms-Icon-ul">
             <li>
