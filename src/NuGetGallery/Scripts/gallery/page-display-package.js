@@ -1,9 +1,11 @@
 $(function () {
     'use strict';
 
-    var currentInstall;
-    $('#install-@packageManager.Name').click(function (e) {
-        
+    var previousTab = 'instll-package-manager';
+    $('#dropdownInstall li').click(function (e) {
+        $(previousTab).hide();
+        $(e.target.hash).show();
+        previousTab = e.target.hash;
     });
 
     // Configure the rename information container

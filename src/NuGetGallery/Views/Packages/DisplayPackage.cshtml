@@ -310,7 +310,7 @@
             <form class="from-inline">
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="input-group-btn">
+                        <div class="input-group-btn" id="dropdownInstall">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Installation Instructions
                                 <span class="caret"></span>
@@ -319,17 +319,18 @@
                             <ul class="dropdown-menu">
                                 @foreach(var packageManager in packageManagers) 
                                 { 
-                                    <li aria-controls="install-@packageManager" href="@packageManager.Name">@packageManager.Name</li>
+                                    <li><a aria-controls="install-@packageManager.Id" href="#install-@packageManager.Id">@packageManager.Name</a></li>
                                 }
                             </ul>
                         </div>
                         @foreach(var packageManager in packageManagers) 
                         { 
-                            <div class="input-group-addon" id="@packageManager.Name" style="display: none">@CommandPanel(packageManager, active:true)</div>
+                            <div class="input-group-addon" id="install-@packageManager.Id" style="display: none">@CommandPanel(packageManager, active:true)</div>
                         }
                     </div>
                 </div>
             </form>
+            <br /> 
 
             @if (Model.Validating)
             {
