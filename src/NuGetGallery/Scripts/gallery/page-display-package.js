@@ -1,8 +1,9 @@
 $(function () {
     'use strict';
 
-    var previousTab = 'install-package-manager'
-    $('#dropdownInstall li"').on(click, function (e) {
+    var previousTab = 'install-package-manager';
+    $('#dropdownInstall li').click (function (e) {
+        console.log('event:', e);
         $(previousTab).hide();
         $(e.target.hash).show();
         previousTab = e.target.hash;
@@ -55,32 +56,32 @@ $(function () {
     }
 
     // Configure ReadMe container
-    var readmeContainer = $("#readme-container");
-    if (readmeContainer[0])
-    {
-        window.nuget.configureExpanderHeading("readme-container");
+    //var readmeContainer = $("#readme-container");
+    //if (readmeContainer[0])
+    //{
+    //    window.nuget.configureExpanderHeading("readme-container");
 
-        window.nuget.configureExpander(
-            "readme-more",
-            "CalculatorAddition",
-            "Show less",
-            "CalculatorSubtract",
-            "Show more");
+    //    window.nuget.configureExpander(
+    //        "readme-more",
+    //        "CalculatorAddition",
+    //        "Show less",
+    //        "CalculatorSubtract",
+    //        "Show more");
 
-        var showLess = $("#readme-less");
-        $clamp(showLess[0], { clamp: 10, useNativeClamp: false });
+    //    var showLess = $("#readme-less");
+    //    $clamp(showLess[0], { clamp: 10, useNativeClamp: false });
 
-        $("#show-readme-more").click(function (e) {
-            showLess.collapse("toggle");
-            e.preventDefault();
-        });
-        showLess.on('hide.bs.collapse', function (e) {
-            e.stopPropagation();
-        });
-        showLess.on('show.bs.collapse', function (e) {
-            e.stopPropagation();
-        });
-    }
+    //    $("#show-readme-more").click(function (e) {
+    //        showLess.collapse("toggle");
+    //        e.preventDefault();
+    //    });
+    //    showLess.on('hide.bs.collapse', function (e) {
+    //        e.stopPropagation();
+    //    });
+    //    showLess.on('show.bs.collapse', function (e) {
+    //        e.stopPropagation();
+    //    });
+    //}
 
     // Configure expanders
     //window.nuget.configureExpanderHeading("dependency-groups");
