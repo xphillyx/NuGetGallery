@@ -319,11 +319,14 @@
                             <ul class="dropdown-menu">
                                 @foreach(var packageManager in packageManagers) 
                                 { 
-                                    <li>@packageManager.Name</li>
+                                    <li aria-controls="install-@packageManager" href="@packageManager.Name">@packageManager.Name</li>
                                 }
                             </ul>
                         </div>
-                        <div class="input-group-addon">test test test tesrt</div>
+                        @foreach(var packageManager in packageManagers) 
+                        { 
+                            <div class="input-group-addon" id="@packageManager.Name" style="display: none">@CommandPanel(packageManager, active:true)</div>
+                        }
                     </div>
                 </div>
             </form>

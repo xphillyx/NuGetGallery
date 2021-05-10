@@ -1,6 +1,11 @@
 $(function () {
     'use strict';
 
+    var currentInstall;
+    $('#install-@packageManager.Name').click(function (e) {
+        
+    });
+
     // Configure the rename information container
     window.nuget.configureExpander("rename-content-container", "ChevronDown", null, "ChevronUp");
     configureExpanderWithEnterKeydown($('#show-rename-content-container'));
