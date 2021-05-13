@@ -170,5 +170,12 @@ namespace NuGetGallery
         /// <param name="packageVersion">The package's version.</param>
         /// <returns>The package's status, or <c>null</c> is the package does not exist.</returns>
         PackageStatus? GetPackageStatus(string packageId, NuGetVersion packageVersion);
+
+        /// <summary>
+        /// Get a package's collection of vulnerable ranges.
+        /// </summary>
+        /// <param name="packageId">The package's Id</param>
+        /// <returns>The package's vulnerable ranges, connecting it to <see cref="PackageVulnerability" /> instances</returns>
+        IQueryable<VulnerablePackageVersionRange> GetVulnerableRanges(string packageId);
     }
 }

@@ -15,15 +15,18 @@ namespace NuGetGallery
     {
         protected readonly IEntityRepository<Certificate> _certificateRepository;
         protected readonly IEntityRepository<Package> _packageRepository;
+        protected readonly IEntityRepository<VulnerablePackageVersionRange> _packageVulnerableRangesRepository;
         protected readonly IEntityRepository<PackageRegistration> _packageRegistrationRepository;
 
         public CorePackageService(
             IEntityRepository<Package> packageRepository,
             IEntityRepository<PackageRegistration> packageRegistrationRepository,
+            IEntityRepository<VulnerablePackageVersionRange> packageVulnerableRangesRepository,
             IEntityRepository<Certificate> certificateRepository)
         {
             _packageRepository = packageRepository ?? throw new ArgumentNullException(nameof(packageRepository));
             _packageRegistrationRepository = packageRegistrationRepository ?? throw new ArgumentNullException(nameof(packageRegistrationRepository));
+            _packageVulnerableRangesRepository = packageVulnerableRangesRepository ?? throw new ArgumentNullException(nameof(packageVulnerableRangesRepository));
             _certificateRepository = certificateRepository ?? throw new ArgumentNullException(nameof(certificateRepository));
         }
 

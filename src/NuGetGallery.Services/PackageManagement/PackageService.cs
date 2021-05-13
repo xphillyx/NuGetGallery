@@ -1085,5 +1085,12 @@ namespace NuGetGallery
                 .Select(p => (PackageStatus?)p.PackageStatusKey)
                 .FirstOrDefault();
         }
+
+        public IQueryable<VulnerablePackageVersionRange> GetVulnerableRanges(string packageId)
+        {
+            return _packageVulnerableRangesRepository
+                .GetAll()
+                .Where(x => x.PackageId == packageId);
+        }
     }
 }
