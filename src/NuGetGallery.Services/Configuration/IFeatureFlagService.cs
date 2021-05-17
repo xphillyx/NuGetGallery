@@ -174,6 +174,11 @@ namespace NuGetGallery
         bool AreEmbeddedReadmesEnabled(User user);
 
         /// <summary>
+        /// Whether the new display package page design is enabled.
+        /// </summary>
+        bool IsDisplayPackagePageV2Enabled();
+
+        /// <summary>
         /// Whether the /Packages() endpoint is enabled for the V1 OData API.
         /// </summary>
         bool IsODataV1GetAllEnabled();
@@ -251,7 +256,7 @@ namespace NuGetGallery
         /// Whether rendering Markdown content to HTML using Markdig is enabled
         /// </summary>
         bool IsMarkdigMdRenderingEnabled();
-        
+
         /// Whether or not the user can delete a package through the API.
         /// </summary>
         bool IsDeletePackageApiEnabled(User user);
