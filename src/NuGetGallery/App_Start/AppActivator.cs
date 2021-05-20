@@ -279,7 +279,7 @@ namespace NuGetGallery
             var packageVulnerabilitiesCacheService = DependencyResolver.Current.GetService<IPackageVulnerabilitiesCacheService>();
             var serviceScopeFactory = DependencyResolver.Current.GetService<IServiceScopeFactory>();
             HostingEnvironment.QueueBackgroundWorkItem(_ => packageVulnerabilitiesCacheService.RefreshCache(serviceScopeFactory));
-            jobs.Add(new PackageVulnerabilitiesCacheRefreshJob(TimeSpan.FromMinutes(30), packageVulnerabilitiesCacheService, serviceScopeFactory));
+            jobs.Add(new PackageVulnerabilitiesCacheRefreshJob(TimeSpan.FromMinutes(2), packageVulnerabilitiesCacheService, serviceScopeFactory));
 
             if (jobs.AnySafe())
             {
