@@ -515,7 +515,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-8">
                     <div class="tab-content body-tab-content">
                         @if (!Model.Deleted)
                         {
@@ -842,7 +842,7 @@
                     </div>
                 </div>
                 
-                <aside aria-label="Package details info" class="col-sm-3 package-details-info">
+                <aside aria-label="Package details info" class="col-sm-4 package-details-info">
                     <div class="sidebar-section">
                         <div class="sidebar-headers">
                             <span class="sidebar-headers">
@@ -1125,25 +1125,26 @@
                             <p>@Model.Copyright</p>
                         }
                     }
-
-                    @if (Model.CanReportAsOwner)
-                    {
-                        <i class="ms-Icon ms-Icon--Help" aria-hidden="true"></i>
-                        <a href="@Url.ReportPackage(Model)" title="Contact the NuGet team for help with your package">
-                            Contact support
-                        </a>
-                    }
-                    else if (Model.Available)
-                    {
-                        <i class="ms-Icon ms-Icon--Flag" aria-hidden="true"></i>
-                        <a href="@Url.ReportAbuse(Model)" title="Report the package as abusive">
-                            Report
-                        </a>
-                    }
+                    <div class="support-links">
+                        @if (Model.CanReportAsOwner)
+                        {
+                            <i class="ms-Icon ms-Icon--Help" aria-hidden="true"></i>
+                            <a href="@Url.ReportPackage(Model)" title="Contact the NuGet team for help with your package">
+                                Contact support
+                            </a>
+                        }
+                        else if (Model.Available)
+                        {
+                            <i class="ms-Icon ms-Icon--Flag" aria-hidden="true"></i>
+                            <a href="@Url.ReportAbuse(Model)" title="Report the package as abusive">
+                                Report
+                            </a>
+                        }
+                    </div>
+                   
 
                     @if (Model.Available)
                     {
-                        <h2>Share</h2>
                         var encodedText = Url.Encode(string.Format("Check out {0} on #NuGet.", Model.Id));
                         <p class="share-buttons">
                             <a href="https://www.facebook.com/sharer/sharer.php?u=@absolutePackageUrl&t=@encodedText" target="_blank">

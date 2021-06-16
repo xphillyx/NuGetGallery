@@ -1430,6 +1430,9 @@ img.reserved-indicator-icon {
   margin-right: 8px;
   border-radius: 5px;
 }
+.page-package-details-v2 .support-links {
+  margin-bottom: 24px;
+}
 .page-package-details-v2 .share-buttons img {
   margin-right: 8px;
   display: inline-block;
