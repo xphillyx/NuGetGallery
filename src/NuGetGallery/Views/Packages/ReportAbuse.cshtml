@@ -42,7 +42,7 @@
 
                 <div id="form-field-reason" class="form-group @Html.HasErrorFor(m => m.Reason)">
                     @Html.ShowLabelFor(m => m.Reason)
-                    <p>Please select the reason for contacting support about this package.</p>
+                    <p tabindex="0">Please select the reason for contacting support about this package. The package contains:</p>
                     @Html.ShowEnumDropDownListFor(m => m.Reason, Model.ReasonChoices, "<Choose a Reason>")
                     @Html.ShowValidationMessagesFor(m => m.Reason)
                 </div>

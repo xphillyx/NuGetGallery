@@ -10,19 +10,37 @@ namespace NuGetGallery
         [Description("Other")]
         Other,
 
-        [Description("The package has a bug/failed to install")]
+        [Description("A bug/failed to install")]
         HasABugOrFailedToInstall,
 
-        [Description("The package contains malicious code")]
+        [Description("Malicious code")]
         ContainsMaliciousCode,
 
-        [Description("The package is infringing my copyright or trademark")]
+        [Description("Content that infringes my copyright or trademark")]
         ViolatesALicenseIOwn,
 
-        [Description("The package contains private/confidential data")]
+        [Description("Private/confidential data")]
         ContainsPrivateAndConfidentialData,
 
-        [Description("The package was not intended to be published publicly on nuget.org")]
+        [Description("Content that was not intended to be published publicly on nuget.org")]
         ReleasedInPublicByAccident,
+
+        [Description("Child sexual exploitation or abuse")]
+        ChildSexualExploitationOrAbuse,
+
+        [Description("Terrorism or violent extremism")]
+        TerrorismOrViolentExtremism,
+
+        [Description("Hate speech")]
+        HateSpeech,
+
+        [Description("Content related to imminent harm")]
+        ImminentHarm,
+
+        [Description("Non-consensual intimate imagery (i.e. \"revenge porn\")")]
+        RevengePorn,
+
+        [Description("Other nudity or pornography (not \"revenge porn\")")]
+        OtherNudityOrPornography,
     }
 }
