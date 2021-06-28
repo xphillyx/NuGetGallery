@@ -1,13 +1,6 @@
 ﻿$(function () {
     'use strict';
 
-    var previousTab = 'instll-package-manager';
-    $('#dropdownInstall li').click(function (e) {
-        $(previousTab).hide();
-        $(e.target.hash).show();
-        previousTab = e.target.hash;
-    });
-
     // Configure the rename information container
     window.nuget.configureExpander("rename-content-container", "ChevronDown", null, "ChevronUp");
     configureExpanderWithEnterKeydown($('#show-rename-content-container'));

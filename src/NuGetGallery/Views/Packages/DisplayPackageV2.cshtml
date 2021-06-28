@@ -192,18 +192,18 @@
                 }
                 @* Writing out the install command must be on a single line to avoid undesired whitespace in the <pre> tag. *@
                 <pre class="install-script" id="@packageManager.Id-text">@foreach (var c in cs) {<span class="install-command-row">@c</span>}</pre>
-                <div class="copy-button">
+                <!--<div class="copy-button">-->
                     <!--In order to statisfy the requirement to announce button status both on NVDA/Narrator, other screen reader like NVDA will
                         announce the data-content "Copied" everytime when we press button, however, it won't work with Narrator when we use bootstrap popover 
                         because of known issue(https://github.com/twbs/bootstrap/issues/18618).
                         We add aria-pressed to indicate the whether button is pressed or not, which is workaround only for Narrator announce the status change of button
                     -->
-                    <button id="@packageManager.Id-button" class="btn btn-default btn-warning" type="button"
+                    <!--<button id="@packageManager.Id-button" class="btn btn-default btn-warning" type="button"
                             data-toggle="popover" data-placement="bottom" data-content="Copied."
                             aria-label="@packageManager.CopyLabel" aria-pressed="false" aria-live="polite" role="button">
                         <span class="ms-Icon ms-Icon--Copy" aria-hidden="true"></span>
                     </button>
-                </div>
+                </div>-->
             </div>
         </div>
 
@@ -502,7 +502,7 @@
                             }
                         </div>
                     </div>*@
-                    <form class="from-inline">
+                    @*<form class="from-inline">
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-btn" id="dropdownInstall">
@@ -524,7 +524,20 @@
                                 }
                             </div>
                         </div>
-                    </form>
+                    </form>*@
+                    <div class="installation-instructions">
+                        <select name="installation-instructions" class="installation-instructions-dropdown">
+                            @foreach (var packageManager in packageManagers)
+                            {
+                                <option value= @packageManager.Id>@packageManager.Name</option>
+                            }
+                        </select>
+                        @foreach (var packageManager in packageManagers) { 
+                            <div class="instructions-displayed">
+                                @CommandPanel(packageManager, active: true);
+                            </div>
+                        }
+                    </div>
                 }
             </div>
             <div class="body-tabs">
