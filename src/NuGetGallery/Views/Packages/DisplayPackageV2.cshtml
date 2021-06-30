@@ -526,15 +526,22 @@
                         </div>
                     </form>*@
                     <div class="installation-instructions">
-                        <select name="installation-instructions" class="installation-instructions-dropdown">
-                            @foreach (var packageManager in packageManagers)
-                            {
-                                <option value= @packageManager.Id>@packageManager.Name</option>
-                            }
-                        </select>
+                        <div class="top-content-instructions">
+                            <select name="installation-instructions" class="installation-instructions-dropdown">
+                                @foreach (var packageManager in packageManagers)
+                                {
+                                    <option value=@packageManager.Id>@packageManager.Name</option>
+                                }
+                            </select>
+                            <button class="btn btn-default installation-instructions-buttons" type="button"
+                                    data-toggle="popover" data-placement="bottom" data-content="Copied."
+                                    aria-label="CopyLabel" aria-pressed="false" aria-live="polite" role="button">
+                                <span class="ms-Icon ms-Icon--Copy" aria-hidden="true"></span>
+                            </button>
+                        </div>
                         @foreach (var packageManager in packageManagers) { 
                             <div class="instructions-displayed">
-                                @CommandPanel(packageManager, active: true);
+                                @CommandPanel(packageManager, active: true)
                             </div>
                         }
                     </div>

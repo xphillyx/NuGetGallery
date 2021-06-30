@@ -1437,6 +1437,18 @@ img.reserved-indicator-icon {
 .page-package-details-v2 .installation-instructions .instructions-displayed pre {
   border: 0px;
 }
+.page-package-details-v2 .installation-instructions-buttons {
+  background-color: #0078D4;
+  width: 32px;
+  height: 32px;
+  float: right;
+}
+.page-package-details-v2 .installation-instructions-buttons .ms-Icon--Copy {
+  color: #FFFFFF;
+  width: 16px;
+  height: 16px;
+  display: contents;
+}
 .page-package-details-v2 .package-details-main {
   overflow-wrap: break-word;
   word-wrap: break-word;

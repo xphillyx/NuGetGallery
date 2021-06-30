@@ -1,6 +1,15 @@
 ﻿$(function () {
     'use strict';
 
+    function () {
+        var selectOption = document.getElementsByClassName("installation-instructions-dropdown");
+        var selectedValue = selectOption.options[selectOption.selectedIndex].value;
+    }
+    //e.target is the slectOption 
+    $('.installation-instructions-dropdown').on('change', function (e) {
+        console.log(this.options[e.target.selectedIndex].text);
+    });
+
     // Configure the rename information container
     window.nuget.configureExpander("rename-content-container", "ChevronDown", null, "ChevronUp");
     configureExpanderWithEnterKeydown($('#show-rename-content-container'));
