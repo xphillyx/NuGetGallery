@@ -540,7 +540,7 @@
                             </button>
                         </div>
                         @foreach (var packageManager in packageManagers) { 
-                            <div class="instructions-displayed">
+                            <div class="instructions-displayed" id="@packageManager.Id-instructions">
                                 @CommandPanel(packageManager, active: true)
                             </div>
                         }

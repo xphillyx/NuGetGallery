@@ -98,7 +98,7 @@
       "Domains": []
     },
     "NuGetGallery.DisplayPackagePageV2": {
-      "All": false,
+      "All": true,
       "SiteAdmins": false,
       "Accounts": [],
       "Domains": []
