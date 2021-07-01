@@ -48,28 +48,33 @@
         });
     }
 
+    var previousInstructions = '#' + packageManagers[0] + '-instructions';
     // Finds the selected package manager installation instructions
     $('.installation-instructions-dropdown').on('change', function (e) {
         var newIndex = e.target.selectedIndex;
         var selectedPackage = e.target[newIndex].value;
         var selectedInstructions = $('#' + selectedPackage + '-instructions');
-        console.log(selectedInstructions);
+        // console.log(selectedInstructions);
         // $(selectedInstructions).show();
         // want to show selected instructions 
         // want to hide all the others 
         //want to save new preferred tab 
-        for (var i in packageManagers) {
-            if ((packageManagers[i].id + '-instructions') != selectedInstructions) {
-                $(selectedInstructions).hide();
-            }
+        //for (var i in packageManagers) {
+        //    if ((packageManagers[i].id + '-instructions') != selectedInstructions) {
+        //        $(selectedInstructions).hide();
+        //    }
 
-            else {
-                $(selectedInstructions).show();
-            }
-        }
-
-        console.log(e);
-        console.log(selectedPackage);
+        //    else {
+        //        $(selectedInstructions).show();
+        //    }
+        //}
+        $(previousInstructions).hide();
+        $(selectedInstructions).show();
+        console.log(previousInstructions);
+        previousInstructions = selectedInstructions;
+        console.log(selectedInstructions);
+        // console.log(e);
+        // console.log(selectedPackage);
     });
 
     // Configure package manager copy buttons
