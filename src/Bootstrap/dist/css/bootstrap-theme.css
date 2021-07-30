@@ -1449,9 +1449,6 @@ img.reserved-indicator-icon {
   margin-bottom: 0px;
   width: 100%;
 }
-.page-package-details-v2 .installation-instructions .installation-instruction pre .install-command-row:last-child {
-  padding-bottom: 15px;
-}
 .page-package-details-v2 .installation-instructions .installation-instruction .alert {
   margin-top: 0px;
 }
