@@ -166,7 +166,7 @@
 @helper CommandPanel(PackageManagerViewModel packageManager, bool active)
 {
     var thirdPartyPackageManager = packageManager as ThirdPartyPackageManagerViewModel;
-    <div class="instructions-displayed @(active ? string.Empty : "hidden")" id="@packageManager.Id-instructions">
+    <div class="installation-instruction @(active ? string.Empty : "hidden")" id="@packageManager.Id-instructions">
         <div id="@packageManager.Id">
             <div>
                 <div class="install-script-row">
